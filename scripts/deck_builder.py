@@ -203,7 +203,7 @@ def page_head(slide, spec, theme):
     text(slide, spec.get("title", ""), M + 1.55, TITLE_Y, CW - 1.55, 1.6, size=31, bold=True,
          color=theme["secondary"], font=theme["font_title"], spacing=1.12)
     if spec.get("sub"):
-        text(slide, spec["sub"], M + 1.58, SUB_Y, CW - 1.58, 0.9, size=15,
+        text(slide, spec["sub"], M + 1.58, SUB_Y, CW - 1.58, 0.9, size=18,
              color=theme["muted"], font=theme["font_body"])
 
 
@@ -225,14 +225,14 @@ def p_cover(prs, theme, spec, ctx):
     circle(s, W * 0.80, 8.8, 5.2, theme["main"], line=None)
     circle(s, W * 0.635, 12.4, 2.2, theme["accent"], line=None)
     rect(s, 0, H - 0.55, W, 0.55, theme["secondary"], radius=0)
-    text(s, spec.get("kicker", ""), M, 5.0, 18, 1.0, size=15, color=theme["main"],
+    text(s, spec.get("kicker", ""), M, 5.0, 18, 1.0, size=17, color=theme["main"],
          font=theme["font_body"])
     text(s, spec.get("title", ""), M, 6.2, 19.5, 4.6, size=46, bold=True,
          color=theme["secondary"], font=theme["font_title"], spacing=1.2)
     rect(s, M, 11.4, 2.6, 0.14, theme["main"], radius=0)
     text(s, spec.get("subtitle", ""), M, 12.1, 19.5, 2.2, size=19,
          color=theme["text"], font=theme["font_body"], spacing=1.35)
-    text(s, spec.get("org", ""), M, 15.6, 18, 0.9, size=12, color=theme["muted"],
+    text(s, spec.get("org", ""), M, 15.4, 18, 0.9, size=16, color=theme["muted"],
          font=theme["font_body"])
 
 
@@ -246,7 +246,7 @@ def p_section(prs, theme, spec, ctx):
     text(s, spec.get("title", ""), M + 1.3, 9.9, CW - 6, 2.6, size=40, bold=True,
          color="#FFFFFF", font=theme["font_title"])
     if spec.get("note"):
-        text(s, spec["note"], M + 1.35, 12.9, CW - 10, 1.6, size=17,
+        text(s, spec["note"], M + 1.35, 12.9, CW - 10, 1.6, size=20,
              color="#AEB7C4", font=theme["font_body"])
     text(s, f"{ctx['n']:02d} / {ctx['total']:02d}", W - M - 3.2, FOOTER_Y, 3.2, 0.8,
          size=10, color="#6E7A8C", align="right", font=theme["font_body"])
@@ -264,7 +264,7 @@ def p_cards(prs, theme, spec, ctx):
     # 自适应卡片高度：内容少的卡片撑高一点，内容多的给足空间
     ideal = 0
     for it in items:
-        h_in = 1.7 + est_height(it.get("note", ""), 15, cw - 2.0) + 0.9
+        h_in = 1.7 + est_height(it.get("note", ""), 18, cw - 2.0) + 0.9
         ideal = max(ideal, h_in)
     min_h = 6.6 if rows == 1 else 5.0
     ch = min((BODY_H - gap * (rows - 1)) / rows, max(ideal, min_h))
@@ -276,7 +276,7 @@ def p_cards(prs, theme, spec, ctx):
         y = top + r * (ch + gap)
         rect(s, x, y, cw, ch, theme["tint"], line=None, radius=0.28)
         num = str(it.get("mark") or f"{i+1:02d}")
-        note_h = est_height(it.get("note", ""), 15, cw - 1.9)
+        note_h = est_height(it.get("note", ""), 18, cw - 1.9)
         head_h = 2.2
         block = head_h + note_h + 0.4
         top_in = y + max((ch - block) / 2, 1.0)
@@ -286,7 +286,7 @@ def p_cards(prs, theme, spec, ctx):
         text(s, it.get("title", ""), x + 2.35, top_in - 0.08, cw - 3.2, 1.2, size=22, bold=True,
              color=theme["secondary"], font=theme["font_title"])
         hline(s, x + 0.95, top_in + 1.35, 1.4, theme["main"], 2.0)
-        text(s, it.get("note", ""), x + 0.95, top_in + head_h, cw - 1.9, note_h + 0.4, size=15,
+        text(s, it.get("note", ""), x + 0.95, top_in + head_h, cw - 1.9, note_h + 0.4, size=18,
              color=theme["text"], font=theme["font_body"], spacing=1.4)
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
@@ -313,7 +313,7 @@ def p_bullets(prs, theme, spec, ctx):
              size=20, bold=False, color=theme["secondary"], font=theme["font_body"],
              anchor="t" if note else "m")
         if note:
-            text(s, note, M + 2.3, y + item_h - 1.15, CW - 3.2, 0.9, size=14,
+            text(s, note, M + 2.3, y + item_h - 1.15, CW - 3.2, 0.9, size=16,
                  color=theme["muted"], font=theme["font_body"])
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
@@ -333,10 +333,10 @@ def p_kpi(prs, theme, spec, ctx):
         rect(s, x, top, cw, 0.18, theme["main"], radius=0)
         text(s, it.get("value", ""), x, top + 1.9, cw, 3.4, size=64, bold=True,
              color=theme["main"], align="center", font=theme["font_num"])
-        text(s, it.get("unit", ""), x, top + 5.5, cw, 0.9, size=14,
+        text(s, it.get("unit", ""), x, top + 5.5, cw, 0.9, size=18,
              color=theme["muted"], align="center", font=theme["font_body"])
         hline(s, x + cw * 0.3, top + 6.6, cw * 0.4, theme["line"], 1.0)
-        text(s, it.get("label", ""), x + 0.7, top + 7.0, cw - 1.4, 2.2, size=16,
+        text(s, it.get("label", ""), x + 0.7, top + 7.0, cw - 1.4, 2.2, size=18,
              color=theme["text"], align="center", font=theme["font_body"])
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
@@ -382,7 +382,7 @@ def p_compare(prs, theme, spec, ctx):
         y = top + 3.1
         for it in (blk.get("items") or [])[:4]:
             circle(s, x + 1.0, y + 0.28, 0.24, col, line=None)
-            text(s, str(it), x + 1.65, y, half - 2.6, 1.9, size=15,
+            text(s, str(it), x + 1.65, y, half - 2.6, 1.9, size=18,
                  color=theme["text"], font=theme["font_body"], spacing=1.3)
             y += 1.9
     circle(s, W / 2 - 1.0, top + ch / 2 - 1.0, 2.0, theme["secondary"], line=None)
