@@ -29,6 +29,18 @@ python3 scripts/template_map.py templates/tech/template.pptx --slide 1
 python3 scripts/fill_template.py templates/tech/template.pptx templates/tech/mapping.example.yaml -o out.pptx
 ```
 
+## 字体（已随仓库附带）
+
+`templates/fonts/` 里放了这三套模板实际用到的 9 个字体（69MB），装完即可 100% 还原设计：
+
+```bash
+# Windows：全选 templates/fonts/ 里的字体 → 右键 安装 → 重启 Office
+# Linux:
+mkdir -p ~/.fonts && cp templates/fonts/* ~/.fonts/ && fc-cache -f
+```
+
+缺字体时用 `思源黑体 CN` 兜底，版式不变、字形会变。详见 `templates/fonts/README.md`。
+
 ## 三条硬提醒
 
 1. **字体**：这些模板用了汉仪旗黑 / 汉仪雅酷黑 / 汉仪行楷等商业字体。不装字体，打开后会被替换成系统字体，设计感会掉。素材库的模板包里有字体文件（版权归原字体厂商，本仓库不打包）。
