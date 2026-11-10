@@ -1,0 +1,26 @@
+{
+  "_说明": "素材库托管信息。把分享链接填进 url/code 字段，agent 读取本文件即可知道去哪下载。",
+  "total_gb": 102.4,
+  "total_files": 6590,
+  "sources": [
+    {
+      "name": "百度网盘-999套PPT模板",
+      "provider": "baidu",
+      "url": "",
+      "code": "",
+      "index_prefix": "挑战杯PPT素材合集/01-百度网盘-999套PPT模板",
+      "files": 4633,
+      "gb": 74.19
+    },
+    {
+      "name": "夸克-创赛挑战杯",
+      "provider": "quark",
+      "url": "",
+      "code": "",
+      "index_prefix": "挑战杯PPT素材合集/02-夸克-创赛挑战杯",
+      "files": 1956,
+      "gb": 28.21
+    }
+  ],
+  "note": "网盘链接为空时，agent 应提示用户先填写，或从本地 PPT_LIBRARY_ZIP 读取。"
+}

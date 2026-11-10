@@ -1,0 +1,75 @@
+# 示例：一套 8 页的创赛路演 PPT（科技赛道）
+# 生成: python3 scripts/deck_builder.py examples/demo.yaml -o examples/demo.pptx --check
+theme:
+  main: "#0B5FFF"
+  secondary: "#0A2540"
+  accent: "#00D4FF"
+  bg: "#FFFFFF"
+  text: "#2B2B2B"
+  muted: "#8A8F98"
+  font_title: "思源黑体 Heavy"
+  font_body: "思源黑体"
+  font_num: "DIN"
+
+pages:
+  - type: cover
+    kicker: "第八届中国国际互联网+ 大学生创新创业大赛"
+    title: "智眸巡检\n高危环境下的自主巡检方案"
+    subtitle: "用国产视觉模组替代人工登高作业"
+    org: "智眸科技 · 2026"
+
+  - type: section
+    number: "01"
+    title: "痛点与机会"
+    note: "为什么这个赛道的现在是最好的时间点"
+
+  - type: cards
+    title: "三个绕不开的痛点"
+    sub: "每个痛点都对应一个可量化的损失"
+    cols: 3
+    source: "数据来源：2025 年电力行业安全白皮书"
+    items:
+      - {title: "人工登高危险", note: "年事故率 0.37%，保险成本逐年上涨", mark: "01"}
+      - {title: "巡检效率低", note: "单塔人工巡检 45 分钟，日覆盖不足 10 座", mark: "02"}
+      - {title: "数据不闭环", note: "纸笔记录，缺陷发现滞后平均 7 天", mark: "03"}
+
+  - type: kpi
+    title: "我们做到的"
+    sub: "同一座塔，从 45 分钟缩短到 6 分钟"
+    source: "数据来源：2025 年 9 月现场测试报告"
+    items:
+      - {value: "87%", unit: "效率提升", label: "单塔巡检 6 分钟"}
+      - {value: "99.2%", unit: "缺陷识别率", label: "自研视觉模型"}
+      - {value: "42%", unit: "成本下降", label: "对比传统方案"}
+
+  - type: timeline
+    title: "三年规划"
+    items:
+      - {label: "2026", title: "示范落地", note: "3 个变电站试点"}
+      - {label: "2027", title: "省级推广", note: "覆盖 120 座变电站"}
+      - {label: "2028", title: "全国复制", note: "进入 6 个省级电网"}
+      - {label: "2029", title: "出海", note: "东南亚市场"}
+
+  - type: compare
+    title: "为什么是我们"
+    sub: "同样的任务，两条不同的技术路径"
+    left:
+      title: "传统人工巡检"
+      items: ["登高作业，安全风险高", "单塔 45 分钟", "纸笔记录，滞后 7 天", "单塔年均成本 2.1 万元"]
+    right:
+      title: "智眸自主巡检"
+      items: ["地面作业，零登高", "单塔 6 分钟", "数据实时回传", "单塔年均成本 1.2 万元"]
+
+  - type: image_text
+    title: "产品形态"
+    sub: "地面站 + 自主爬塔机器人"
+    image: ""
+    items:
+      - "模块化设计，30 分钟现场部署"
+      - "支持 4G / 5G / 电力专网"
+      - "IP65 防护，-20℃ 到 60℃ 工作"
+      - "国产视觉模组，成本下降 60%"
+
+  - type: closing
+    title: "谢谢"
+    note: "智眸科技 · 让高危作业不再需要人"
