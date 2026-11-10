@@ -106,21 +106,26 @@ def make_chart(kind, data, out, theme_name, title="", width=1600, transparent=Tr
                 ax.plot(list(idx), vals, color=color, linewidth=3, label=s.get("name", ""))
         if kind == "hbar":
             ax.set_yticks(list(idx))
-            ax.set_yticklabels(cats, color=tc, fontsize=13)
+            ax.set_yticklabels(cats, color=tc, fontsize=16)
+            ax.set_xticks([])
             ax.invert_yaxis()
         else:
             ax.set_xticks(list(idx))
-            ax.set_xticklabels(cats, color=tc, fontsize=13)
+            ax.set_xticklabels(cats, color=tc, fontsize=16)
         for sp in ("top", "right", "left", "bottom"):
             ax.spines[sp].set_visible(False)
-        ax.tick_params(colors=tc, labelsize=12, length=0)
+        ax.tick_params(colors=tc, labelsize=16, length=0)
         ax.grid(axis="y", color=th["muted"], alpha=0.25, linewidth=0.8, zorder=0)
         ax.set_axisbelow(True)
-        # 数值标签
+        # 数值标签（hbar 标在条形末端右侧，其余标在顶部）
         for s in series:
             for x, v in enumerate(s.get("values", [])):
-                ax.annotate(f"{v}", (x, v), textcoords="offset points", xytext=(0, 8),
-                            ha="center", color=tc, fontsize=12, fontweight="bold")
+                if kind == "hbar":
+                    ax.annotate(f"{v}", (v, x), textcoords="offset points", xytext=(8, 0),
+                                ha="left", va="center", color=tc, fontsize=15, fontweight="bold")
+                else:
+                    ax.annotate(f"{v}", (x, v), textcoords="offset points", xytext=(0, 8),
+                                ha="center", color=tc, fontsize=15, fontweight="bold")
     elif kind == "donut":
         vals = (series[0].get("values") if series else []) or []
         labels = cats or [f"{i+1}" for i in range(len(vals))]
@@ -130,7 +135,7 @@ def make_chart(kind, data, out, theme_name, title="", width=1600, transparent=Tr
                   frameon=False, labelcolor=tc, fontsize=13)
 
     if title:
-        ax.set_title(title, color=tc, fontsize=17, fontweight="bold", pad=14)
+        ax.set_title(title, color=tc, fontsize=22, fontweight="bold", pad=16)
     if len(series) > 1 and kind != "donut":
         ax.legend(frameon=False, labelcolor=tc, loc="upper left", fontsize=12,
                   bbox_to_anchor=(0, 1.12), ncol=len(series))
