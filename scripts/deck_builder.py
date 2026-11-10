@@ -241,7 +241,7 @@ def p_section(prs, theme, spec, ctx):
     circle(s, W - 9.5, -3.8, 13.5, None, line=theme["dark2"], lw=2.0)
     circle(s, W - 5.2, 10.5, 6.5, None, line=theme["main"], lw=1.5)
     rect(s, M, 5.6, 0.3, 7.6, theme["main"], radius=0)
-    text(s, spec.get("number", ""), M + 1.3, 4.6, 12, 4.6, size=110, bold=True,
+    text(s, spec.get("number", ""), M + 1.3, 4.35, 12, 5.6, size=100, bold=True,
          color=theme["main"], font=theme["font_num"], spacing=1.0)
     text(s, spec.get("title", ""), M + 1.3, 9.9, CW - 6, 2.6, size=40, bold=True,
          color="#FFFFFF", font=theme["font_title"])
