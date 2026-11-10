@@ -74,8 +74,13 @@ export PPT_LIBRARY_ZIP=/path/to/挑战杯PPT制作素材库.zip   # 默认 /sdca
 
 ### 路线 A：改造现成模板（默认，质量最高）
 
+仓库自带 3 套精选模板（`templates/tech|red|rural/`，各带 preview.jpg 和 mapping 骨架），clone 下来就能直接用，不需要先下载 100GB 素材库：
+
 ```bash
-# 1) 挑模板（先看预览图）
+# 0) 用自带模板（最简单）
+python3 scripts/fill_template.py templates/tech/template.pptx templates/tech/mapping.example.yaml -o out.pptx
+
+# 1) 或去素材库挑模板（先看预览图）
 python3 scripts/find_template.py 科技 --limit 8
 
 # 2) 看模板结构
