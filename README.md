@@ -10,6 +10,8 @@
 | --- | --- |
 | `SKILL.md` | 技能主体：触发条件、九步工作流、设计规则、坑、验证清单 |
 | `references/` | 素材地图、配色与版式、字体与动画坑、完整经验文档 |
+| `scripts/gen_assets.py` | **自己生成素材**：图表 / 流程 / 时间轴 / 背景（透明底、主题色） |
+| `scripts/layout_check.py` | **排版自检**：文字溢出、元素重叠、字号过小、空页 |
 | `scripts/template_map.py` | **打印现成模板的结构**（每页每元素的编号/位置/文字），用于改造模板 |
 | `scripts/fill_template.py` | **把内容填进现成模板**，设计全部保留（首选路线） |
 | `scripts/deck_builder.py` | 从零生成整套 PPT（9 种页面类型，兜底方案，设计不如现成模板） |
