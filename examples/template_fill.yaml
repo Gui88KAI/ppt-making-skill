@@ -1,0 +1,37 @@
+# 模板填充映射示例
+# 用法:
+#   python3 scripts/template_map.py 模板.pptx --slide 1   先看元素编号
+#   python3 scripts/fill_template.py 模板.pptx 本文件.yaml -o 输出.pptx
+#
+# 元素编号来自 template_map 输出里的 #编号
+# texts 里没列到的元素保持原样（模板自带的装饰文字不用管）
+
+slides:
+  # 封面
+  - index: 1
+    texts:
+      8: "乡野智联"
+      9: "汇报人：李明 · 2026.11"
+    # images:
+    #   12: "cover.jpg"
+
+  # 目录页
+  - index: 2
+    texts:
+      5: "项目背景"
+      6: "技术方案"
+      7: "商业价值"
+
+  # 内容页
+  - index: 3
+    texts:
+      4: "每亩增收 1200 元"
+      5: "传统种植依赖经验，产量波动大；我们用传感器 + 模型给出种植建议，把经验变成数据"
+
+# 多出来的页直接删（从大到小自动处理）
+delete: [19, 20]
+
+# 全局替换（可选）：整个文件里出现的旧文字统一换掉
+# replace:
+#   "xxx科技有限公司": "乡野智联"
+#   "20XX": "2026"
