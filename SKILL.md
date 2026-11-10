@@ -61,6 +61,42 @@ unzip -l "$ZIP" | grep '蓝色' | head -30
 unzip -l "$ZIP" | grep '预览图' | head
 ```
 
+## 两条产出路线（先选路线，别搞反）
+
+### 路线 A：改造现成模板 —— 默认走这条
+
+素材库里的模板是设计师做的（深色科技底、光效、图标、数据卡片），**直接填内容，设计全部保留**。想做出"素材库里那种 PPT"，只有这条路。
+
+```bash
+# 1) 选模板：看预览图挑，不要凭名字猜
+python3 scripts/find_template.py 科技 --limit 8
+unzip "$PPT_LIBRARY_ZIP" "<包路径>/预览图/*" -d /tmp/preview   # 看完再解压 pptx
+
+# 2) 看模板结构：每页每个元素的编号/位置/文字
+python3 scripts/template_map.py 模板.pptx --slide 1
+
+# 3) 写映射文件（格式见 examples/template_fill.yaml）
+#    第 1 页的元素 #8 换成项目名，#9 换成汇报人
+
+# 4) 填内容，设计不动
+python3 scripts/fill_template.py 模板.pptx 映射.yaml -o 输出/项目.pptx
+```
+
+- 页数多了：映射里写 `delete: [19, 20]`
+- 页数不够：优先在**同一套模板**里找版式相似的页，复制后改（复制页用 python-pptx 操作 slide XML）
+- 图片：映射里 `images: {12: "图片路径"}`，按原位等比裁切铺满
+- **字体是模板设计的一部分**：模板用汉仪旗黑/行楷这类字体，先装字体或整体替换，否则设计会垮
+
+### 路线 B：从零生成 —— 只用于没有合适模板或要统一品牌时
+
+```bash
+python3 scripts/deck_builder.py spec.yaml -o 输出/项目.pptx --check
+```
+
+9 种页面类型（cover/section/cards/bullets/kpi/timeline/compare/image_text/image_center/closing），白底极简风。**设计感明显不如素材库模板**，是兜底方案，不要拿它硬凹"高级感"。
+
+> 铁律：用户说"要像素材库那种效果"时，必须走路线 A；路线 B 只能保证结构正确、风格统一。
+
 ## 九步工作流
 
 每一步都产出**文件**交给人类确认，不要在没确认时往下走。
@@ -130,9 +166,13 @@ python3 ~/.agents/skills/challenge-cup-ppt/scripts/pptx_inspect.py 素材/xxx.pp
 
 ### 第 8 步：生成 PPT → `输出/xxx.pptx`
 
-三条路，按情况选：
+三条路，按情况选（**默认第一条**）：
 
-**A. 用 spec 从零生成（最快，风格统一）**
+**A. 改造现成模板（设计最好，推荐）**
+
+见上文「两条产出路线 → 路线 A」。`template_map.py` 看结构，`fill_template.py` 填内容，原设计全部保留。
+
+**B. 用 spec 从零生成（快，但设计一般）**
 
 把页面写成 YAML（结构见 `examples/demo.yaml`），一条命令出整套：
 
@@ -143,7 +183,7 @@ python3 scripts/deck_builder.py spec.yaml -o 输出/项目.pptx --check
 支持 9 种页面类型：`cover` `section` `cards` `bullets` `kpi` `timeline` `compare` `image_text` `closing`，
 自动套用网格、边距、字号阶梯和主题色。适合「内容已经有了，要快速成型」的情况。
 
-**B. 改造现成模板（要设计感时用）**
+**C. 直接改模板里的文字（手写脚本）**
 
 从素材库选一套，用 python-pptx 批量替换文字：
 
@@ -157,7 +197,7 @@ for slide in prs.slides:
 prs.save('输出/项目.pptx')
 ```
 
-**C. 输出「替换说明书」**：给人拿着在电脑上改。列出每页要换的文字、图片、要删的页。
+**D. 输出「替换说明书」**：给人拿着在电脑上改。列出每页要换的文字、图片、要删的页。
 
 ### 第 9 步：检查与交付 → `07-检查报告.md` + 成品
 
@@ -257,6 +297,8 @@ for i,s in enumerate(p.slides,1):
 - `references/素材地图.md` 哪个问题去哪个文件夹
 - `examples/demo.yaml` 一套 8 页示例规格，可直接改成自己的项目
 - `scripts/deck_builder.py` 按 spec 生成整套 PPT
+- `scripts/template_map.py` 打印模板结构（元素编号/位置/文字）
+- `scripts/fill_template.py` 把内容填进现成模板，保留设计
 - `scripts/find_template.py` 索引检索
 - `scripts/pptx_inspect.py` PPT 体检
 - `references/配色与版式.md` 配色表、页型细则
