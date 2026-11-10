@@ -10,7 +10,9 @@
 | --- | --- |
 | `SKILL.md` | 技能主体：触发条件、九步工作流、设计规则、坑、验证清单 |
 | `references/` | 素材地图、配色与版式、字体与动画坑、完整经验文档 |
-| `scripts/deck_builder.py` | **按 YAML 规格从零生成整套 PPT**（9 种页面类型，自动套网格/配色/字号） |
+| `scripts/template_map.py` | **打印现成模板的结构**（每页每元素的编号/位置/文字），用于改造模板 |
+| `scripts/fill_template.py` | **把内容填进现成模板**，设计全部保留（首选路线） |
+| `scripts/deck_builder.py` | 从零生成整套 PPT（9 种页面类型，兜底方案，设计不如现成模板） |
 | `scripts/find_template.py` | 在模板索引里检索，避免加载整个素材库 |
 | `scripts/pptx_inspect.py` | PPTX 体检：页数、版式、字体、字号、占位符残留 |
 | `assets/模板索引.json` | 468 个模板包 / 2697 个 pptx 的索引（赛道分类、预览图数、字体数、体积） |
@@ -65,7 +67,27 @@ export PPT_LIBRARY_ZIP=/path/to/挑战杯PPT制作素材库.zip   # 默认 /sdca
 └── PPT制作经验.md
 ```
 
-## 快速开始
+## 两条路线
+
+> **素材库里的模板是设计师做的**（深色科技底、光效、图标、数据卡片）。
+> 想做出那种效果，必须改造现成模板；从零生成只能保证结构正确。
+
+### 路线 A：改造现成模板（默认，质量最高）
+
+```bash
+# 1) 挑模板（先看预览图）
+python3 scripts/find_template.py 科技 --limit 8
+
+# 2) 看模板结构
+python3 scripts/template_map.py 模板.pptx --slide 1
+
+# 3) 写映射（格式见 examples/template_fill.yaml）
+
+# 4) 填内容，设计不动
+python3 scripts/fill_template.py 模板.pptx 映射.yaml -o 输出.pptx
+```
+
+### 路线 B：从零生成（兜底）
 
 **方式一：从零生成（最快）**
 
