@@ -107,6 +107,74 @@ python3 scripts/deck_builder.py spec.yaml -o 输出/项目.pptx --check
 
 > 铁律：用户说"要像素材库那种效果"时，必须走路线 A；路线 B 只能保证结构正确、风格统一。
 
+## 素材自产：缺什么自己造（禁止截图拼凑）
+
+**这一节是硬要求**：不要从别的 PPT / 网页上截图直接贴进去。缺素材时按下面的顺序解决。
+
+### 决策表
+
+| 缺什么 | 自己怎么造 | 命令 |
+| --- | --- | --- |
+| 数据图（柱/折线/环形/面积） | 用脚本按主题色画，数据来自你自己的分析 | `gen_assets.py chart` |
+| 流程 / 技术路线 | 生成水平流程条，可直接放进模板图片框 | `gen_assets.py flow` |
+| 时间轴 / 发展规划 | 生成时间轴 | `gen_assets.py timeline` |
+| 封面 / 章节页底图 | 生成带渐变、网格、光晕的背景 | `gen_assets.py bg` |
+| 架构图 / 示意 | 用 `flow` 组合，或模板自带的版式 | `gen_assets.py flow` |
+| 图标 | 优先用模板自带的图标；其次用 unicode/几何形；再不行画简单线条图标 | — |
+| 实拍照片 | ① 项目自有照片 ② 免费可商用图库（Unsplash / Pexels / Pixabay / Wikimedia）③ 最后才是搜索 | 见下方规范 |
+
+### 生成命令
+
+```bash
+# 图表（透明底，自动配主题色，2 倍分辨率）
+python3 scripts/gen_assets.py chart --kind bar --data data.json --out chart.png --theme tech --title "巡检效率（%）"
+
+# data.json:
+# {"categories": ["2023","2024"], "series": [{"name":"效率","values":[45,87]}]}
+
+# 流程
+python3 scripts/gen_assets.py flow --steps "数据采集|传感器,模型训练|YOLOv11,落地部署|边缘端" --out flow.png --theme tech
+
+# 时间轴
+python3 scripts/gen_assets.py timeline --items "2024|立项|样机,2025|试点|3座站,2026|推广|120座" --out tl.png --theme tech
+
+# 背景
+python3 scripts/gen_assets.py bg --style tech --out bg.png
+```
+
+主题色和模板对齐：`tech`（深蓝科技）、`red`（红金）、`rural`（绿意）、`clean`（浅色极简）。
+
+### 上网找图的规范（不是禁止，是必须守规矩）
+
+1. **优先免费可商用**：Unsplash、Pexels、Pixabay、Wikimedia Commons，下载原图不要截图
+2. **必须统一处理**：等比裁切进模板框 + 加主色蒙版 20–40%，整套色温一致
+3. **必须记来源**：图片放进 PPT 的同时，在页脚或备注写来源和授权
+4. **禁止**：直接截别人 PPT/公众号文章的图、带水印的图、来源不明的图
+5. 找不到合适照片时，**用 `gen_assets.py bg/flow` 自己画**，比硬贴一张不搭的图好
+
+### 生成完必须自检
+
+```bash
+python3 scripts/layout_check.py 输出/项目.pptx
+```
+
+---
+
+## 排版硬规则（自查清单）
+
+这些是"看起来专业"和"看起来乱"的分界线，`layout_check.py` 会自动查大部分：
+
+1. **字号**：正文 ≥ 18pt，标题 ≥ 32pt，注释 12–14pt。**12pt 正文是灾难**（投影看不清、显廉价）。
+2. **一页一个视觉主体**：要么大图，要么大数字，要么大标题。不要三样都中等。
+3. **文字不要压装饰**：模板的文本框位置是设计好的，改文案不要超出原框宽度。
+4. **留白**：四周至少 1.2cm；内容块之间 ≥ 0.8cm。
+5. **对齐**：同类元素左对齐或居中对齐，不要手拖乱放。
+6. **颜色**：≤ 3 个色相，强调色只用在 1 处。
+7. **每页配图**：路演 PPT 平均 2 页至少 1 张视觉元素（图/表/图示/大数字），全文字页最多连排 1 页。
+8. 交付前跑 `layout_check.py --strict`，有 error 必须修完。
+
+---
+
 ## 九步工作流
 
 每一步都产出**文件**交给人类确认，不要在没确认时往下走。
@@ -307,6 +375,8 @@ for i,s in enumerate(p.slides,1):
 - `references/素材地图.md` 哪个问题去哪个文件夹
 - `examples/demo.yaml` 一套 8 页示例规格，可直接改成自己的项目
 - `scripts/deck_builder.py` 按 spec 生成整套 PPT
+- `scripts/gen_assets.py` 自己生成素材（图表/流程/时间轴/背景）
+- `scripts/layout_check.py` 排版自检（溢出/重叠/字号/空页）
 - `scripts/template_map.py` 打印模板结构（元素编号/位置/文字）
 - `scripts/fill_template.py` 把内容填进现成模板，保留设计
 - `scripts/find_template.py` 索引检索
