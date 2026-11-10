@@ -176,9 +176,39 @@ description: 以"拿奖作品"为目标，把一份 PPT 从零做到成品的导
 
 **没有素材表的后果**：做到一半发现缺图，随便找一张凑——这就是"满打满算一张截图"的来源。
 
-### 5.2 素材从哪来（按优先级）
+### 5.2 配图必须自己生成（这是精品的关键）
 
-1. **自己生成**（数据图/流程/时间轴/背景）——最可控，永远首选
+素材库里的 PPT 之所以高级，是因为**背景是照片**（机器人、无人机、稻田、工坊）。
+色块堆不出那种效果。**每一页开工前先问：这一页让人"看到"什么？答不上来就缺图。**
+
+| 页面 | 要的图 | 做法 |
+| --- | --- | --- |
+| 封面 | 主题场景大图 | 生成 `background`，左/右半留空给标题 |
+| 痛点 | 现场/设备照片 | 生成 `hero` |
+| 方案 | 产品外观、技术细节 | 生成 `hero` |
+| 数据 | 图表用代码画 + 背景用 `texture` | `gen_assets.py chart` + 生成 |
+| 章节页 | 抽象背景 | 生成 `background` |
+| 团队 | **必须是真实照片** | 自有/搜图，不用 AI 生成 |
+
+**完整规范见 `references/配图生成规范.md`**（含三类图的提示词模板、统一性要求、失败处理）。
+
+生成方式（按你的环境选一种）：
+
+```bash
+# A. 有脚本执行能力
+python3 scripts/gen_image.py --manifest prompts.json --outdir assets/
+python3 scripts/gen_image.py --manifest prompts.json --provider openai   # 用 DALL·E
+python3 scripts/gen_image.py --manifest prompts.json --provider custom --endpoint URL --api-key KEY
+
+# B. 有生图工具的 AI：自己调工具，用配图生成规范里的提示词模板
+# C. 纯聊天 AI：输出 prompts.json 给用户，让用户拿去任意生图工具
+```
+
+**整套图必须统一**：同一个 `theme` + `palette` + `style`，生成后统一压暗（60–65%）+ 主色蒙版。
+
+### 5.3 素材从哪来（按优先级）
+
+1. **自己生成**（数据图/流程/时间轴/背景/**配图**）——最可控，永远首选
    ```bash
    python3 scripts/gen_assets.py chart --kind bar --data data.json --out chart.png --theme tech
    python3 scripts/gen_assets.py flow --steps "采集|传感器,训练|模型,部署|边缘端" --out flow.png
@@ -278,7 +308,8 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 
 | 工具 | 用途 |
 | --- | --- |
-| `gen_assets.py` | 自己造素材：图表/流程/时间轴/背景 |
+| `gen_image.py` | **AI 生成配图**：背景/主体图/纹理（支持 pollinations/openai/自定义） |
+| `gen_assets.py` | 代码造素材：图表/流程/时间轴/背景 |
 | `layout_check.py` | 排版自检：溢出/重叠/字号/空页 |
 | `pptx_inspect.py` | 体检：页数/字体/字号分布 |
 | `find_template.py` | 素材库里的成品可以参考"效果长什么样" |
@@ -289,7 +320,7 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 核心结论：人家一页 90–100 个元素（背景图、角标、光带、卡片框、连接线…），
 "一页 8 个元素"永远做不出那个效果；按「标题带 / 内容带 / 页脚带」三段式，从 25–30 个元素起步。
 
-参考：`references/元素化制作法.md`（构图原理）、`references/文案句式库.md`、`references/评审逻辑.md`、`references/配色与版式.md`、`references/字体与动画坑.md`。
+参考：`references/配图生成规范.md`（配图提示词模板）、`references/元素化制作法.md`（构图原理）、`references/文案句式库.md`、`references/评审逻辑.md`、`references/配色与版式.md`、`references/字体与动画坑.md`。
 
 ---
 
