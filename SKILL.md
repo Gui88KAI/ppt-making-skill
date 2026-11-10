@@ -285,6 +285,10 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 | `template_map.py` / `fill_template.py` | 想复用某套设计时用（**可选，不强制**） |
 | `deck_builder.py` | 从零搭页面的兜底 |
 
+**做之前必读**：`references/模板逆向规范.md` —— 拆解素材库 5 套高分模板得出的真实密度与配方。
+核心结论：人家一页 90–100 个元素（背景图、角标、光带、卡片框、连接线…），
+"一页 8 个元素"永远做不出那个效果；按「标题带 / 内容带 / 页脚带」三段式，从 25–30 个元素起步。
+
 参考：`references/元素化制作法.md`（构图原理）、`references/文案句式库.md`、`references/评审逻辑.md`、`references/配色与版式.md`、`references/字体与动画坑.md`。
 
 ---
