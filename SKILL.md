@@ -67,6 +67,16 @@ unzip -l "$ZIP" | grep '预览图' | head
 
 素材库里的模板是设计师做的（深色科技底、光效、图标、数据卡片），**直接填内容，设计全部保留**。想做出"素材库里那种 PPT"，只有这条路。
 
+**仓库自带 3 套模板**（不用下载 100GB 素材库也能跑）：
+
+| 目录 | 风格 | 赛道 |
+| --- | --- | --- |
+| `templates/tech/` | 深蓝科技 + 光效 | 科技 / AI / 医疗 |
+| `templates/red/` | 红金 + 非遗 | 红旅 / 非遗 |
+| `templates/rural/` | 绿意 + 乡村实景 | 乡村振兴 / 农业 |
+
+每套都有 `template.pptx` + `preview.jpg` + `mapping.example.yaml`（元素编号已列好）。
+
 ```bash
 # 1) 选模板：看预览图挑，不要凭名字猜
 python3 scripts/find_template.py 科技 --limit 8
