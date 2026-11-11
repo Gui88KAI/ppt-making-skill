@@ -231,6 +231,27 @@ def p_section(prs, d, n, total):
     transition(s, "fade")
 
 
+
+def p_toc(prs, d, n, total):
+    s = base(prs)
+    add_decor(s, 3)
+    nav_bar(s, -1)
+    txt(s, "目录", 1.3, 1.9, 6, 1.8, size=48, bold=True, color=GOLD)
+    txt(s, "CONTENTS", 1.35, 3.7, 8, 0.8, size=18, color=MUTED)
+    hline(s, 1.35, 4.5, 4.0, GOLD, 2.5)
+    items = d["items"]
+    cw, ch, gap = 7.4, 3.2, 0.7
+    for i, (num, title, note) in enumerate(items[:6]):
+        r, c = divmod(i, 3)
+        x = 1.3 + c * (cw + gap)
+        y = 5.4 + r * (ch + gap)
+        rect(s, x, y, cw, ch, CARD, radius=0.16, line=LINE)
+        rect(s, x, y, 0.1, ch, GOLD)
+        txt(s, num, x + 0.55, y + 0.45, 2.2, 1.0, size=28, bold=True, color=GOLD, font=F_NUM)
+        txt(s, title, x + 2.5, y + 0.5, cw - 3.0, 0.9, size=21, bold=True, color=TEXT)
+        txt(s, note, x + 0.55, y + 1.6, cw - 1.1, 1.3, size=14, color=MUTED, spacing=1.3)
+    foot(s, n, total)
+
 def p_overview(prs, d, n, total):
     s = base(prs)
     head(s, d["chapter"], d["title"], d.get("sub", ""))
@@ -493,6 +514,12 @@ def deck_spec(a):
         ("p_opening", dict(img=A("open3.jpg"))),
         ("p_cover", dict(cover_img=A("cover.jpg"))),
 
+        ("p_toc", dict(items=[("01", "项目背景", "政策切口 · 社会痛点 · 技术痛点 · 主人公"),
+                              ("02", "解决方案", "三个创新点对应三个痛点"),
+                              ("03", "商业逻辑", "三方评价 · 知识产权 · 产品 · 竞品 · 模式"),
+                              ("04", "落地方案", "中试验证 · 帮扶案例 · 市场推广"),
+                              ("05", "团队", "核心团队 · 专家顾问 · 凭证 · 财务"),
+                              ("06", "社会成效", "社会效益 · 媒体报道 · 教育维度 · 规划")])),
         ("p_section", dict(num="01", title="项目背景故事", note="从政策到痛点，从痛点到技术")),
         ("p_overview", dict(chapter="01 · 项目概述", title="一页看懂：我们做什么",
                             sub="200 字说不清的，就不是好项目",
