@@ -28,6 +28,15 @@ from pptx.util import Cm
 W_CM, H_CM = 33.867, 19.05
 PX_W, PX_H = 1920, 1080
 
+# 类型 → 封面配置（左上角文字 / 配色 / 字体风格）
+TYPE_PRESETS = {
+    "01": dict(eyebrow="第十届中国国际“互联网+”大学生创新创业大赛", palette="green", style="culture"),
+    "02": dict(eyebrow="商业计划书 · BUSINESS PLAN 2026", palette="blue", style="business"),
+    "03": dict(eyebrow="天使轮路演 · ANGEL ROUND 2026", palette="blue", style="tech"),
+    "04": dict(eyebrow="本科毕业论文答辩 · 2026 届", palette="blue", style="business"),
+    "05": dict(eyebrow="《课程名》课程期末汇报", palette="green", style="culture"),
+}
+
 PALETTES = {
     "green": dict(dark=(7, 19, 14), gold=(212, 162, 76), gold2=(216, 185, 108),
                   text=(242, 239, 230), muted=(157, 179, 165), stroke=(20, 40, 28)),
@@ -205,10 +214,24 @@ def main():
     ap.add_argument("--info", default="赛道 乡村振兴 · 组别 创意组 · 负责人 XXX")
     ap.add_argument("--bg", required=True)
     ap.add_argument("--hero", default="")
-    ap.add_argument("--palette", default="green", choices=list(PALETTES))
-    ap.add_argument("--style", default="culture", choices=list(FONT_STACKS))
+    ap.add_argument("--palette", default=None, choices=list(PALETTES))
+    ap.add_argument("--style", default="", choices=[""] + list(FONT_STACKS))
+    ap.add_argument("--type", default="", choices=[""] + list(TYPE_PRESETS),
+                    help="01创赛 02BP 03路演 04答辩 05课程；会自动设置左上角文字/配色/字体")
     ap.add_argument("--out", default="封面.pptx")
     a = ap.parse_args()
+    # 类型预设优先（用户显式传的 --style/--palette 仍可覆盖）
+    preset = TYPE_PRESETS.get(a.type, {})
+    if preset:
+        a.competition = preset["eyebrow"]
+        if a.palette is None:
+            a.palette = preset["palette"]
+        if not a.style:
+            a.style = preset["style"]
+    if a.palette is None:
+        a.palette = "green"
+    if not a.style:
+        a.style = "culture"
     pal = PALETTES[a.palette]
     compose_cover(a.title, a.subtitle, a.tagline, a.competition, a.info,
                   a.bg, a.hero, pal, "assets/cover_composed.jpg", style=a.style)
