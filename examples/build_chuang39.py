@@ -112,18 +112,29 @@ DECOR = []   # 由 main 填充：装饰图路径
 
 
 def add_decor(s, idx=0):
-    """给内容页加装饰图：右上两小图 + 底部纹理条 + 左侧竖条。"""
+    """装饰层：左侧竖排小图 + 底边小图 + 图标 + 点阵 + 细线（不压内容区）。"""
     if not DECOR:
         return
     try:
-        pic(s, DECOR[idx % len(DECOR)], W - 4.4, 0.5, 3.1, 3.1)
-        rect(s, W - 4.4, 0.5, 3.1, 3.1, None, line=GOLD, lw=1.0)
-        pic(s, DECOR[(idx + 3) % len(DECOR)], W - 7.2, 1.15, 2.2, 2.2)
-        rect(s, W - 7.2, 1.15, 2.2, 2.2, None, line=LINE, lw=0.8)
-        pic(s, DECOR[(idx + 5) % len(DECOR)], 0, H - 1.4, W, 1.4)
-        rect(s, 0, H - 1.4, W, 1.4, BG, alpha=0.76)
-        pic(s, DECOR[(idx + 7) % len(DECOR)], 0, 4.0, 0.7, 9.0)
-        rect(s, 0, 4.0, 0.7, 9.0, BG, alpha=0.55)
+        # 1 顶部极细纹理条（不侵占标题区）
+        pic(s, DECOR[idx % len(DECOR)], 0, 0, W, 0.32)
+        rect(s, 0, 0, W, 0.32, BG, alpha=0.55)
+        # 2 左边距竖排 4 张小图
+        for k in range(4):
+            pic(s, DECOR[(idx + k * 3) % len(DECOR)], 0.12, 4.4 + k * 2.75, 0.95, 2.3)
+        # 3 底边 3 张小图（页脚线之上）
+        for k in range(3):
+            pic(s, DECOR[(idx + 2 + k * 4) % len(DECOR)], 1.3 + k * 3.9, 16.05, 3.5, 0.95)
+            rect(s, 1.3 + k * 3.9, 16.05, 3.5, 0.95, BG, alpha=0.25)
+        # 4 图标行（页脚线之上，右侧）
+        for k in range(4):
+            rect(s, W - 5.6 + k * 0.85, 16.15, 0.55, 0.55, GOLD, alpha=0.14, radius=0.1)
+        # 5 点阵（右上角）
+        for r_ in range(3):
+            for c_ in range(5):
+                rect(s, W - 5.4 + c_ * 0.26, 0.62 + r_ * 0.26, 0.08, 0.08, GOLD, alpha=0.3)
+        # 6 细线
+        hline(s, W - 8.6, 15.95, 7.3, LINE, 0.6)
     except Exception:
         pass
 
@@ -265,7 +276,7 @@ def p_cards(prs, d, n, total, cols=3):
         rect(s, x, y, cw, 0.12, GOLD)
         txt(s, f"{i+1:02d}", x + 0.6, y + 0.7, 2, 0.9, size=18, color=GOLD, font=F_NUM, bold=True)
         txt(s, t, x + 0.6, y + 1.8, cw - 1.2, 1.2, size=24, bold=True, color=TEXT)
-        txt(s, body, x + 0.6, y + 3.3, cw - 1.2, ch - 4.6, size=19, color=TEXT, spacing=1.45)
+        txt(s, body, x + 0.6, y + 3.3, cw - 1.2, ch - 4.6, size=16, color=TEXT, spacing=1.4)
         if tag:
             rect(s, x + cw - 2.8, y + ch - 1.3, 2.3, 0.75, GOLD, alpha=0.18, radius=0.2)
             txt(s, tag, x + cw - 2.8, y + ch - 1.18, 2.3, 0.6, size=14, color=GOLD, align="c")
