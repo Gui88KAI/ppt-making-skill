@@ -38,6 +38,23 @@ PALETTES = {
 }
 
 CJK = "/system/fonts/NotoSansCJK-Regular.ttc"
+FT = "/usr/share/fonts/truetype/custom/"
+
+# 四种字体方案（统计自素材库 40 套模板，见 references/字体方案.md）
+FONT_STACKS = {
+    "culture": dict(sub=FT + "华文楷体.TTF",
+                    body=FT + "思源宋体 CN Light.otf",
+                    info=FT + "阿里巴巴普惠体 L.ttf"),
+    "tech": dict(sub=FT + "汉仪雅酷黑 75W.ttf",
+                 body=FT + "阿里巴巴普惠体 L.ttf",
+                 info=FT + "阿里巴巴普惠体 R.ttf"),
+    "business": dict(sub=FT + "阿里巴巴普惠体 B.ttf",
+                     body=FT + "阿里巴巴普惠体 L.ttf",
+                     info=FT + "阿里巴巴普惠体 R.ttf"),
+    "royal": dict(sub=FT + "思源宋体 CN Heavy.otf",
+                  body=FT + "思源宋体 CN Light.otf",
+                  info=FT + "阿里巴巴普惠体 L.ttf"),
+}
 FALLBACK_FONTS = [
     "/usr/share/fonts/truetype/custom/演示流云楷--淘宝店：烦烦优创馆.ttf",
     "/usr/share/fonts/truetype/custom/演示流云楷.ttf",
@@ -87,7 +104,8 @@ def render_char(ch, out_path, pal, size=900):
     out.save(out_path)
 
 
-def compose_cover(title, subtitle, tagline, competition, info, bg_path, hero_path, pal, out_path):
+def compose_cover(title, subtitle, tagline, competition, info, bg_path, hero_path, pal, out_path, style="culture"):
+    fs = FONT_STACKS.get(style, FONT_STACKS["culture"])
     bg = Image.open(bg_path).convert("RGB").resize((PX_W, PX_H), Image.LANCZOS)
     bg = ImageEnhance.Brightness(bg).enhance(0.55)
     left = Image.new("RGBA", (PX_W, PX_H), (0, 0, 0, 0))
@@ -118,23 +136,26 @@ def compose_cover(title, subtitle, tagline, competition, info, bg_path, hero_pat
         im = Image.open(p).convert("RGBA").resize((400 - i * 18, 400 - i * 18), Image.LANCZOS)
         bg.alpha_composite(im, (x0 + i * step, 175 - i * 33))
 
-    def F(s, bold=False):
+    def F(path, s):
         try:
-            return ImageFont.truetype(CJK, s)
+            return ImageFont.truetype(path, s)
         except Exception:
-            return ImageFont.load_default()
+            try:
+                return ImageFont.truetype(CJK, s)
+            except Exception:
+                return ImageFont.load_default()
 
     d = ImageDraw.Draw(bg)
-    d.text((100, 62), competition, font=F(34), fill=pal["gold"])
+    d.text((100, 62), competition, font=F(fs["info"], 30), fill=pal["gold"])
     d.rectangle([232, 690, 610, 698], fill=pal["gold"])
-    d.text((228, 720), subtitle, font=F(58), fill=pal["text"])
-    d.text((230, 800), tagline, font=F(34), fill=pal["muted"])
+    d.text((228, 720), subtitle, font=F(fs["sub"], 52), fill=pal["text"])
+    d.text((230, 800), tagline, font=F(fs["body"], 30), fill=pal["muted"])
     bar = Image.new("RGBA", (PX_W, PX_H), (0, 0, 0, 0))
     ImageDraw.Draw(bar).rounded_rectangle([228, 872, 1420, 946], radius=12,
                                           fill=pal["dark"] + (170,),
                                           outline=pal["gold"] + (140,), width=2)
     bg = Image.alpha_composite(bg, bar)
-    ImageDraw.Draw(bg).text((254, 890), info, font=F(28), fill=pal["text"])
+    ImageDraw.Draw(bg).text((254, 890), info, font=F(fs["info"], 26), fill=pal["text"])
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     bg.convert("RGB").save(out_path, quality=92)
 
@@ -185,11 +206,12 @@ def main():
     ap.add_argument("--bg", required=True)
     ap.add_argument("--hero", default="")
     ap.add_argument("--palette", default="green", choices=list(PALETTES))
+    ap.add_argument("--style", default="culture", choices=list(FONT_STACKS))
     ap.add_argument("--out", default="封面.pptx")
     a = ap.parse_args()
     pal = PALETTES[a.palette]
     compose_cover(a.title, a.subtitle, a.tagline, a.competition, a.info,
-                  a.bg, a.hero, pal, "assets/cover_composed.jpg")
+                  a.bg, a.hero, pal, "assets/cover_composed.jpg", style=a.style)
     build_pptx("assets/cover_composed.jpg", a.out)
     print(f"已生成 {a.out}（4 页：3 页开屏 + 正式封面）")
 
