@@ -9,7 +9,52 @@ CJK = "/system/fonts/NotoSansCJK-Regular.ttc"
 CJKB = "/system/fonts/NotoSansCJK-Bold.ttc"
 
 
-def fnt(pt, bold, ppc):
+
+# —— 字体名 → 真实字体文件（预览用真实字体，不再一律 Noto）——
+import glob as _glob
+_FT = "/usr/share/fonts/truetype/custom/"
+_FONT_MAP = [
+    ("思源宋体 CN Heavy", _FT + "思源宋体 CN Heavy.otf"),
+    ("思源宋体 CN Light", _FT + "思源宋体 CN Light.otf"),
+    ("思源宋体 CN", _FT + "思源宋体 CN.otf"),
+    ("华文楷体", _FT + "华文楷体.TTF"),
+    ("汉仪雅酷黑 75W", _FT + "汉仪雅酷黑 75W.ttf"),
+    ("阿里巴巴普惠体 B", _FT + "阿里巴巴普惠体 B.ttf"),
+    ("阿里巴巴普惠体 L", _FT + "阿里巴巴普惠体 L.ttf"),
+    ("阿里巴巴普惠体 R", _FT + "阿里巴巴普惠体 R.ttf"),
+    ("演示流云楷", _FT + "演示流云楷--淘宝店：烦烦优创馆.ttf"),
+    ("演示镇魂行楷", _FT + "演示镇魂行楷--淘宝店：烦烦优创馆.ttf"),
+    ("Montserrat", _FT + "Montserrat--淘宝店：烦烦优创馆.ttf"),
+    ("Bahnschrift", _FT + "Bahnschrift.ttf"),
+]
+
+
+def _resolve_font(name, bold):
+    if not name:
+        return None
+    base = name.replace(" ", "").lower()
+    for k, path in _FONT_MAP:
+        if k.replace(" ", "").lower() in base.replace(" ", ""):
+            if os.path.exists(path):
+                return path
+    # 粗体变体优先
+    if bold:
+        for cand in (_FT + "阿里巴巴普惠体 B.ttf", CJKB):
+            if os.path.exists(cand):
+                return cand
+    return CJK
+
+
+def fnt(pt, bold, ppc, name=None):
+    px = max(int(round(pt / 72 * 2.54 * ppc)), 5)
+    path = _resolve_font(name, bold) or (CJKB if bold and os.path.exists(CJKB) else CJK)
+    try:
+        return ImageFont.truetype(path, px)
+    except Exception:
+        return ImageFont.truetype(CJKB if bold and os.path.exists(CJKB) else CJK, px)
+
+
+def _fnt_old(pt, bold, ppc):
     px = max(int(round(pt / 72 * 2.54 * ppc)), 5)
     return ImageFont.truetype(CJKB if bold and os.path.exists(CJKB) else CJK, px)
 
@@ -133,18 +178,22 @@ def text_lines(d, tf, box, ppc, y0=None):
     for pa in tf.paragraphs:
         if not pa.runs:
             continue
-        sz = 18; bold = False; col = (40, 40, 40)
+        sz = 18; bold = False; col = (40, 40, 40); fname = None
         for r in pa.runs:
             if r.font.size:
                 sz = r.font.size.pt
             bold = bool(r.font.bold) or bold
+            try:
+                fname = r.font.name or fname
+            except Exception:
+                pass
             try:
                 if r.font.color and r.font.color.type is not None:
                     col = rgb(r.font.color.rgb)
             except Exception:
                 pass
             break
-        f = fnt(sz, bold, ppc)
+        f = fnt(sz, bold, ppc, fname)
         lh = int(sz / 72 * 2.54 * ppc * 1.3)
         txt = ''.join(r.text for r in pa.runs)
         w = box[2] - box[0]
@@ -155,10 +204,18 @@ def text_lines(d, tf, box, ppc, y0=None):
             else:
                 cur += ch
         lines.append(cur)
+        al = str(pa.alignment) if pa.alignment is not None else "LEFT"
         for ln in lines:
             if y0 > box[3]:
                 break
-            d.text((box[0], y0), ln, font=f, fill=col + (255,))
+            tw = d.textlength(ln, font=f)
+            if "CENTER" in al:
+                tx = box[0] + (box[2] - box[0] - tw) / 2
+            elif "RIGHT" in al:
+                tx = box[2] - tw
+            else:
+                tx = box[0]
+            d.text((tx, y0), ln, font=f, fill=col + (255,))
             y0 += lh
 
 
