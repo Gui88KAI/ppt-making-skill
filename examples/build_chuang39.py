@@ -132,7 +132,7 @@ def add_decor(s, idx=0):
         # 5 点阵（右上角）
         for r_ in range(3):
             for c_ in range(5):
-                rect(s, W - 5.4 + c_ * 0.26, 0.62 + r_ * 0.26, 0.08, 0.08, GOLD, alpha=0.3)
+                rect(s, W - 5.4 + c_ * 0.26, 1.15 + r_ * 0.26, 0.08, 0.08, GOLD, alpha=0.3)
         # 6 细线
         hline(s, W - 8.6, 15.95, 7.3, LINE, 0.6)
     except Exception:
@@ -155,13 +155,42 @@ def base(prs, dark=True):
     return s
 
 
+NAV_CHAPTERS = ["项目背景", "技术介绍", "痛点分析", "应对策略", "团队介绍", "发展规划"]
+
+
+def nav_bar(s, current_idx=-1):
+    """顶部导航条：左项目名 + 右 6 个章节（当前高亮）。"""
+    rect(s, 0, 0, W, 0.9, "#04120C", alpha=0.92)
+    hline(s, 0, 0.9, W, GOLD, 0.6)
+    txt(s, "慧飞植保 · 无人机智能植保", 1.1, 0.22, 11, 0.5, size=12, color=GOLD, bold=True)
+    x = W - 1.2
+    for i in range(len(NAV_CHAPTERS) - 1, -1, -1):
+        name = NAV_CHAPTERS[i]
+        wch = 3.05
+        x -= wch
+        active = (i == current_idx)
+        if active:
+            rect(s, x + 0.08, 0.5, wch - 0.16, 0.34, GOLD, alpha=0.22, radius=0.06)
+        txt(s, name, x + 0.08, 0.5, wch - 0.16, 0.35, size=11,
+            color=GOLD if active else "#8FA79B", align="c")
+
+
 def head(s, chapter, title, sub="", idx=0):
     add_decor(s, idx)
-    txt(s, chapter, 1.3, 0.72, 14, 0.8, size=16, color=GOLD)
-    txt(s, title, 1.3, 1.55, W - 3.5, 1.6, size=36, bold=True, color=TEXT)
-    rect(s, 1.35, 3.3, 2.4, 0.09, GOLD)
+    # 章节号映射到导航位置
+    cur = -1
+    for i, c in enumerate(["背景", "技术", "痛点", "策略", "团队", "规划"]):
+        if c in chapter:
+            cur = i
+            break
+    nav_bar(s, cur)
+    txt(s, chapter, 1.3, 1.18, 14, 0.7, size=15, color=GOLD)
+    txt(s, title, 1.3, 1.92, W - 3.5, 1.5, size=33, bold=True, color=TEXT)
     if sub:
-        txt(s, sub, 1.35, 3.6, W - 4, 1.0, size=21, color=MUTED, font=F_KAI)
+        # 结论条：深色半透明横条 + 白字（国赛常见做法）
+        bw = min(W - 2.6, 1.6 + len(sub) * 0.42)
+        rect(s, 1.3, 3.5, bw, 1.0, "#0C2418", alpha=0.85, radius=0.08, line=GOLD, lw=0.7)
+        txt(s, sub, 1.72, 3.66, bw - 0.9, 0.7, size=16, color=TEXT)
 
 
 def foot(s, n, total, label="慧飞植保 · 智慧农业无人机植保"):
