@@ -219,6 +219,13 @@ def page_foot(slide, theme, n, total, spec=None):
 # ---------- 页面类型 ----------
 def p_cover(prs, theme, spec, ctx):
     s = blank(prs, theme)
+    # 成品封面图优先：保留已验证的最佳封面，不被自动排版覆盖
+    _img = spec.get("image") or spec.get("cover_image")
+    if _img:
+        import os as _os
+        if _os.path.exists(_img):
+            s.shapes.add_picture(_img, 0, 0, Cm(W), Cm(H))
+            return
     # 右侧抽象构图
     circle(s, W * 0.63, -3.2, 16.5, None, line=theme["tint2"], lw=2.0)
     circle(s, W * 0.70, 1.6, 10.5, theme["tint"], line=None)
