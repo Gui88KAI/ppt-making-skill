@@ -59,6 +59,7 @@ def main():
             spec["continuity_from_previous"] = slide.get("continuity_from_previous", "")
             spec["continuity_to_next"] = slide.get("continuity_to_next", "")
             spec["prompt"] = compile_prompt(bible, slide, image, candidate)
+            spec.setdefault("style", image.get("style", bible.get("style", "photo")))
             spec["seed"] = stable_seed(base_seed, slide.get("number", 0), candidate + 1)
             spec["candidate"] = candidate + 1
             images.append(spec)
