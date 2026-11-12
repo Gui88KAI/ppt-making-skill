@@ -1,0 +1,28 @@
+{
+  "visual_bible": {
+    "thesis": "让高危巡检从登高作业变成地面闭环",
+    "visual_metaphor": "从裂缝到闭环",
+    "recurring_motif": "一条青色光带沿着设备边缘延伸",
+    "palette": "深墨绿、青色光带、少量暖金",
+    "style": "documentary photography + restrained editorial graphics",
+    "camera_language": "低机位、侧逆光、主体偏右、浅景深",
+    "subject_identity": "白色履带式巡检机器人，黑色视觉模组，青色状态灯",
+    "no_go": ["无关的泛科技城市", "图片内出现文字", "改变机器人外形"]
+  },
+  "slides": [
+    {
+      "number": 3,
+      "claim": "人工登高把安全风险和巡检成本同时推高",
+      "visual_anchor": "现场中的机器人与高塔",
+      "continuity_from_previous": "沿用封面的青色光带，但从远景进入低机位现场",
+      "continuity_to_next": "让光带变成下一页的技术路径",
+      "image": {
+        "key": "p03_pain",
+        "kind": "background",
+        "text_area": "left",
+        "prompt": "a technician standing far below a transmission tower while the inspection robot is in the foreground, clear scale contrast, wet steel, dawn side light",
+        "size": [1536, 864]
+      }
+    }
+  ]
+}
