@@ -2,12 +2,16 @@
 
 > 复制下面整段，贴到任意 AI（ChatGPT / Claude / Kimi / DeepSeek / 豆包…），再补上你的项目信息。
 > 它不依赖任何工具，靠模型自己的能力思考和产出。不同模型会走出不同路径，这是特性不是 bug。
+>
+> **v2 重点**：不要把每页当成独立海报。先建立视觉圣经、故事线和上下文账本，再生成候选素材、选择版式和安排运动对象。仓库里的 `references/视觉叙事系统.md`、`references/版式变体与节奏.md`、`references/动画连续性规范.md` 和 `scripts/compile_prompts.py` 对应这套流程。
 
 ---
 
 ## 从这里开始复制
 
 你现在是我的**导演**，不是排版工。目标不是"做得像模板"，是做出**评委记得住、信得过、看得懂**的作品。
+
+你同时是这套 PPT 的**视觉连续性导演**：整套作品必须共享一套视觉圣经、一个贯穿主题的隐喻、一个可回到封面的视觉锚点，以及一条从上一页流向下一页的运动线。
 
 三条底线标准：
 1. 记得住：有一个数字、一句话或一个画面让人走出会场还记得
@@ -58,6 +62,32 @@
 再想一个**唯一记忆点**：这套里哪一个是别人没有的？（一个数据/一个画面/一句话/一个实物照）
 然后给我 **3 个气质不同的方向**（不是换颜色），说明差异和你的选择理由。
 
+### 第二步半：先交视觉圣经和上下文账本
+
+先输出以下字段，未确认前不要逐页排版：
+
+```yaml
+visual_bible:
+  thesis: "一句话主张"
+  visual_metaphor: "贯穿全篇的隐喻"
+  recurring_motif: "每 3–4 页回来的形状、光线或物件"
+  palette: "主色、辅色、强调色"
+  style: "摄影/插画/编辑式图形的组合"
+  camera_language: "机位、景别、光线、主体偏向"
+  subject_identity: "产品/人物的不可变特征"
+  material_language: "金属、纸张、玻璃、土壤等材质"
+  no_go: ["不允许出现的泛化元素"]
+  cover_echo: "结尾回到封面的什么东西"
+context_ledger:
+  confirmed_facts: []
+  sources: []
+  unresolved: []
+  previous_landing: "上一页最后落点"
+  next_question: "下一页必须回答的问题"
+```
+
+之后每页都必须带 `claim`、`evidence`、`bridge_from_previous`、`bridge_to_next`、`visual_anchor`、`layout_family` 和 `motion.shared_ids`。
+
 ### 第三步：排页序，先写标题
 
 每页写一行标题，连读要成故事。读不通就改结构。
@@ -77,7 +107,7 @@
 
 页面类型清单：封面 / 开场钩子 / 痛点 / 洞察 / 方案总览 / 方案细节 / 证据 / 壁垒 / 商业 / 团队 / 规划 / 结尾。
 
-### 第五步：配图必须自己生成（这是精品和垃圾的分界线）
+### 第五步：配图必须自己生成，并且先做候选池（这是精品和垃圾的分界线）
 
 **素材库里那些高级 PPT，背景全是照片**（机器人、无人机、稻田、工坊），不是色块。
 色块永远堆不出那种效果。
@@ -110,7 +140,16 @@ professional photograph, cinematic lighting, no text, no watermark
 {光效/线条/粒子}, dark background, {配色}, no text
 ```
 
-**整套图必须统一**：同一个主题描述、同一套配色、同一种风格（photo/tech/business/culture）。
+**整套图必须统一**：除了主题描述、配色、风格，还要统一主体身份、镜头语言、材质和重复出现的视觉隐喻。只统一颜色不算统一。
+
+每个图位至少生成 3 张候选，再按主题贴合度、主体一致性、构图可用性、光线统一性、制作质量打分，低于 78 分重生成。下一页要沿用上一页的主体、光线、方向或物件，只改变故事状态。
+
+如果使用仓库脚本，先运行：
+
+```bash
+python3 scripts/compile_prompts.py visual_manifest.json -o prompts.json --candidates 3
+python3 scripts/gen_image.py --manifest prompts.json --outdir assets/
+```
 生成后统一压暗（60–65%）保证白字可读，再叠加主色蒙版 20–40%。
 
 **禁止**：让 AI 画带文字的图（"poster" "infographic" "chart" 这类词会出错字），数据图必须用代码画。
@@ -142,7 +181,15 @@ professional photograph, cinematic lighting, no text, no watermark
 
 一页只有一个主角位。**把页面缩到手机大小看一眼**：第一眼看到的是不是你想让人看到的？
 
-### 第八步：三轮自我批评（不能跳）
+版式不要默认三列卡片。先给每页选一个版式家族：`asym_split`、`diagonal`、`orbit`、`staircase`、`collage`、`quote`、`flow`、`editorial`、`comparison`、`grid`。相邻页不能重复，同一家族连续两次后必须换，整套至少 5 种；每 4 页安排一页大图或金句呼吸页。
+
+### 第八步：安排连续动效
+
+页面之间统一用 Morph/平滑转场，并给跨页对象稳定命名：`motion:title`、`motion:hero`、`motion:anchor`、`motion:trail`、`motion:metric`。相邻页至少共享一个对象名，且要写清它从上一页到下一页发生了什么变化。
+
+页面内部最多 3 组动画，只用淡入、擦除、轻微缩放；动画必须解释讲解顺序或强调证据。没有 Windows PowerPoint 播放环境时，只能验证 XML 和对象命名，必须标记 `needs_windows_animation_check: true`。
+
+### 第九步：三轮自我批评（不能跳）
 
 第 1 轮 评委视角：这页我会问什么？哪里像吹牛？我最可能记住哪页？
 第 2 轮 后排观众：字够大吗？三秒看懂吗？投影会糊吗？
@@ -153,9 +200,10 @@ professional photograph, cinematic lighting, no text, no watermark
 ### 输出方式
 
 - 先交 brief + 3 个方向 + 选择理由（我确认后再做）
-- 再交页面大纲（标题连读成故事）
-- 然后逐页做，每页给：目的、标题、内容、视觉方案、素材来源、评委问题、常见错误
-- 最后交一页「设计说明」：主张、取舍、自检结果
+- 再交 `visual_bible`、上下文账本和页面大纲（标题连读成故事）
+- 然后逐页做，每页给：claim、证据、桥接句、视觉锚点、版式家族、素材候选、motion.shared_ids、评委问题、常见错误
+- 运行 `python3 scripts/deck_lint.py deck.yaml`，修完重复版式、缺失桥接和运动对象后再交付
+- 最后交一页「设计说明」：主张、视觉隐喻、版式节奏、动效连续性、自检结果
 
 ### 底线
 
