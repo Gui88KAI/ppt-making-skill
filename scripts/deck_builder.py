@@ -443,12 +443,135 @@ def p_closing(prs, theme, spec, ctx):
              align="center", font=theme["font_body"])
 
 
+
+# ---------- 版式变体：避免所有内容页退化成 cards ----------
+def p_asym_split(prs, theme, spec, ctx):
+    s = blank(prs, theme)
+    image = spec.get("image") or spec.get("hero")
+    iw = float(spec.get("image_width", 56)) / 100 * W
+    side = spec.get("anchor_position", "right")
+    if side == "left":
+        picture(s, image, 0, 0, iw, H, radius=0)
+        tx, tw = iw + 1.5, W - iw - M - 1.5
+    else:
+        picture(s, image, W - iw, 0, iw, H, radius=0)
+        tx, tw = M, W - iw - M - 1.5
+    text(s, spec.get("kicker", ""), tx, 2.0, tw, 0.8, size=15, color=theme["main"], font=theme["font_body"])
+    text(s, spec.get("title", ""), tx, 3.1, tw, 3.1, size=34, bold=True, color=theme["secondary"], font=theme["font_title"])
+    rect(s, tx, 6.8, 2.8, 0.14, theme["main"], radius=0)
+    y = 7.7
+    for i, item in enumerate((spec.get("items") or [])[:4]):
+        value = item if isinstance(item, str) else item.get("text", item.get("title", ""))
+        note = "" if isinstance(item, str) else item.get("note", "")
+        circle(s, tx, y + 0.15, 0.42, theme["main"], line=None)
+        text(s, value, tx + 0.72, y, tw - 0.72, 0.9, size=18, bold=True, color=theme["secondary"], font=theme["font_title"])
+        if note:
+            text(s, note, tx + 0.72, y + 0.85, tw - 0.72, 1.0, size=14, color=theme["muted"], font=theme["font_body"])
+        y += 2.1 if note else 1.55
+    page_foot(s, theme, ctx["n"], ctx["total"], spec)
+
+
+def p_diagonal(prs, theme, spec, ctx):
+    s = blank(prs, theme, theme["secondary"])
+    band = s.shapes.add_shape(MSO_SHAPE.PARALLELOGRAM, Cm(-3), Cm(-2), Cm(W * 0.58), Cm(H + 4))
+    band.fill.solid(); band.fill.fore_color.rgb = hexc(theme["main"]); band.line.fill.background()
+    text(s, spec.get("kicker", "转折"), 1.6, 2.2, 12, 0.8, size=15, color=theme["accent"], font=theme["font_body"])
+    text(s, spec.get("title", ""), 1.6, 3.4, 14.5, 3.6, size=36, bold=True, color="#FFFFFF", font=theme["font_title"])
+    text(s, spec.get("sub", ""), 1.6, 7.8, 12.5, 1.8, size=18, color="#D7E7DF", font=theme["font_body"])
+    items = (spec.get("items") or [])[:3]
+    for i, item in enumerate(items):
+        x, yy = 16.2 + i * 5.1, 4.4 + i * 1.15
+        rect(s, x, yy, 4.4, 5.6, theme["card"], line=theme["line"], radius=0.2)
+        title = item if isinstance(item, str) else item.get("title", "")
+        note = "" if isinstance(item, str) else item.get("note", "")
+        text(s, f"0{i+1}", x + 0.55, yy + 0.55, 1.2, 0.8, size=20, bold=True, color=theme["main"], font=theme["font_num"])
+        text(s, title, x + 0.55, yy + 1.75, 3.3, 1.1, size=19, bold=True, color=theme["secondary"], font=theme["font_title"])
+        if note:
+            text(s, note, x + 0.55, yy + 3.15, 3.3, 1.65, size=14, color=theme["muted"], font=theme["font_body"])
+    page_foot(s, theme, ctx["n"], ctx["total"], spec)
+
+
+def p_orbit(prs, theme, spec, ctx):
+    s = blank(prs, theme)
+    page_head(s, spec, theme)
+    cx, cy = M + CW * 0.53, BODY_Y + BODY_H * 0.48
+    circle(s, cx - 3.1, cy - 3.1, 6.2, theme["tint"], line=theme["main"], lw=2.0)
+    text(s, spec.get("center", spec.get("title", "核心")), cx - 2.1, cy - 0.8, 4.2, 1.6, size=22, bold=True, color=theme["secondary"], align="center", anchor="m", font=theme["font_title"])
+    items = (spec.get("items") or [])[:6]
+    math = __import__("math")
+    for i, item in enumerate(items):
+        a = -math.pi / 2 + i * (2 * math.pi / max(len(items), 1))
+        px, py = cx + math.cos(a) * 9.0, cy + math.sin(a) * 5.0
+        circle(s, px - 0.46, py - 0.46, 0.92, theme["accent"], line=None)
+        title = item if isinstance(item, str) else item.get("title", "")
+        note = "" if isinstance(item, str) else item.get("note", "")
+        text(s, title, px - 2.5, py + 0.7, 5.0, 0.8, size=16, bold=True, color=theme["secondary"], align="center", font=theme["font_title"])
+        if note:
+            text(s, note, px - 2.7, py + 1.55, 5.4, 1.0, size=12, color=theme["muted"], align="center", font=theme["font_body"])
+    page_foot(s, theme, ctx["n"], ctx["total"], spec)
+
+
+def p_staircase(prs, theme, spec, ctx):
+    s = blank(prs, theme)
+    page_head(s, spec, theme)
+    items = (spec.get("items") or [])[:4]
+    gap = 0.55
+    cw = (CW - gap * (len(items) - 1)) / max(len(items), 1)
+    for i, item in enumerate(items):
+        x, h = M + i * (cw + gap), 4.6 + i * 1.35
+        y = BODY_Y + BODY_H - h
+        rect(s, x, y, cw, h, theme["tint"] if i % 2 == 0 else theme["card"], line=theme["line"], radius=0.2)
+        title = item if isinstance(item, str) else item.get("title", "")
+        note = "" if isinstance(item, str) else item.get("note", "")
+        text(s, f"0{i+1}", x + 0.55, y + 0.5, 1.4, 0.8, size=20, bold=True, color=theme["main"], font=theme["font_num"])
+        text(s, title, x + 0.55, y + 1.55, cw - 1.1, 1.1, size=18, bold=True, color=theme["secondary"], font=theme["font_title"])
+        if note:
+            text(s, note, x + 0.55, y + 2.85, cw - 1.1, h - 3.35, size=14, color=theme["muted"], font=theme["font_body"])
+    page_foot(s, theme, ctx["n"], ctx["total"], spec)
+
+
+def p_collage(prs, theme, spec, ctx):
+    s = blank(prs, theme)
+    page_head(s, spec, theme)
+    images = [spec.get("image")] + list(spec.get("images") or [])
+    images = [x for x in images if x]
+    if images:
+        picture(s, images[0], M + 1.0, BODY_Y + 0.25, CW * 0.58, BODY_H * 0.86, radius=0.15)
+    if len(images) > 1:
+        picture(s, images[1], M + CW * 0.48, BODY_Y + 1.15, CW * 0.37, BODY_H * 0.43, radius=0.15)
+    if len(images) > 2:
+        picture(s, images[2], M + CW * 0.58, BODY_Y + BODY_H * 0.53, CW * 0.29, BODY_H * 0.34, radius=0.15)
+    tx = M + CW * 0.72
+    text(s, spec.get("title", ""), tx, BODY_Y + 0.8, CW * 0.25, 2.8, size=28, bold=True, color=theme["secondary"], font=theme["font_title"])
+    y = BODY_Y + 4.1
+    for item in (spec.get("items") or [])[:3]:
+        title = item if isinstance(item, str) else item.get("title", item.get("text", ""))
+        note = "" if isinstance(item, str) else item.get("note", "")
+        text(s, title, tx, y, CW * 0.25, 0.8, size=16, bold=True, color=theme["main"], font=theme["font_title"])
+        if note:
+            text(s, note, tx, y + 0.85, CW * 0.25, 1.2, size=13, color=theme["muted"], font=theme["font_body"])
+        y += 2.2
+    page_foot(s, theme, ctx["n"], ctx["total"], spec)
+
+
+def p_quote(prs, theme, spec, ctx):
+    s = blank(prs, theme, theme["secondary"])
+    circle(s, W - 12.5, -5.0, 18.5, None, line=theme["dark2"], lw=1.5)
+    text(s, spec.get("kicker", "关键判断"), M, 3.1, CW, 0.8, size=15, color=theme["main"], font=theme["font_body"])
+    text(s, spec.get("quote", spec.get("title", "")), M, 5.0, CW * 0.78, 5.6, size=42, bold=True, color="#FFFFFF", font=theme["font_title"])
+    if spec.get("note"):
+        text(s, spec["note"], M, 12.1, CW * 0.72, 1.6, size=18, color="#B8C9BF", font=theme["font_body"])
+    if spec.get("source"):
+        text(s, spec["source"], M, 16.8, CW, 0.7, size=10, color="#7B9586", font=theme["font_body"])
+
 BUILDERS = {
     "cover": p_cover, "section": p_section, "cards": p_cards, "bullets": p_bullets,
     "kpi": p_kpi, "timeline": p_timeline, "compare": p_compare,
     "image_text": p_image_text, "image_center": p_image_center, "closing": p_closing,
     "three_cols": lambda p, t, sp, c: p_cards(p, t, dict(sp, cols=3), c),
     "two_cols": lambda p, t, sp, c: p_cards(p, t, dict(sp, cols=2), c),
+    "asym_split": p_asym_split, "diagonal": p_diagonal, "orbit": p_orbit,
+    "staircase": p_staircase, "collage": p_collage, "quote": p_quote,
 }
 
 
@@ -458,12 +581,18 @@ def build(spec, out):
     prs.slide_width = Cm(W)
     prs.slide_height = Cm(H)
     pages = spec.get("pages") or []
+    try:
+        from motion import apply_slide_motion
+    except Exception:
+        apply_slide_motion = None
     for i, page in enumerate(pages, 1):
-        kind = page.get("type", "cards")
+        kind = page.get("layout_family") or page.get("layout") or page.get("type", "cards")
         fn = BUILDERS.get(kind)
         if not fn:
             raise SystemExit(f"未知页面类型: {kind}（可用: {', '.join(BUILDERS)}）")
         fn(prs, theme, page, {"n": i, "total": len(pages)})
+        if apply_slide_motion:
+            apply_slide_motion(prs.slides[-1], page)
     d = os.path.dirname(os.path.abspath(out))
     if d:
         os.makedirs(d, exist_ok=True)
