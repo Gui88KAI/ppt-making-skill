@@ -15,6 +15,7 @@ def lint(spec):
     pages = spec.get("pages") or []
     errors, warnings = [], []
     families = []
+    motion_ids = []
     for i, page in enumerate(pages, 1):
         family = page.get("layout_family") or page.get("layout") or page.get("type", "cards")
         families.append(family)
@@ -23,8 +24,12 @@ def lint(spec):
         if missing:
             warnings.append(f"P{i}: 缺少叙事字段 {', '.join(missing)}")
         motion = page.get("motion") or {}
+        ids = set(motion.get("shared_ids") or [])
+        motion_ids.append(ids)
         if not motion.get("shared_ids"):
             warnings.append(f"P{i}: 没有 motion.shared_ids，Morph 无法形成连续对象")
+        if i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
+            warnings.append(f"P{i}: 与上一页没有共享运动对象，页面间动画可能断开")
         if len(motion.get("entry_groups") or []) > 3:
             errors.append(f"P{i}: entry_groups 超过 3 组")
         if page.get("images_required", False):
