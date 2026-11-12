@@ -1,0 +1,83 @@
+# 视觉叙事 v2 示例
+# 生成：python3 scripts/deck_builder.py examples/demo_v2.yaml -o examples/demo_v2.pptx --check
+theme:
+  main: "#0B5FFF"
+  secondary: "#0A2540"
+  accent: "#00D4FF"
+  bg: "#FFFFFF"
+  text: "#2B2B2B"
+  muted: "#8A8F98"
+  font_title: "思源黑体 Heavy"
+  font_body: "思源黑体"
+  font_num: "DIN"
+
+pages:
+  - layout_family: quote
+    title: "危险动作应该被重新分配"
+    quote: "把危险动作交给机器，把确定性留给人"
+    claim: "高危巡检的第一步是把人从危险位置移开"
+    visual_anchor: "quote"
+    bridge_from_previous: "封面提出高危巡检"
+    bridge_to_next: "接下来要看风险到底来自哪里"
+    motion: {transition: morph, shared_ids: [motion:title, motion:anchor]}
+
+  - layout_family: asym_split
+    title: "风险和效率同时被人工模式推高"
+    sub: "现场问题不是一个，而是三个相互放大的损失"
+    items:
+      - {title: "登高危险", note: "人员必须进入高风险位置"}
+      - {title: "巡检缓慢", note: "单塔作业时间过长"}
+      - {title: "记录滞后", note: "缺陷无法及时闭环"}
+    claim: "人工模式同时放大安全、效率和数据风险"
+    visual_anchor: "现场主体"
+    bridge_from_previous: "上一页的判断落到现场"
+    bridge_to_next: "既然问题是闭环断裂，方案就必须把链路接起来"
+    motion: {transition: morph, shared_ids: [motion:title, motion:anchor]}
+
+  - layout_family: diagonal
+    title: "真正的转折是让路径自己闭环"
+    sub: "从发现问题到执行处置，不再依赖纸笔转交"
+    items:
+      - {title: "发现", note: "现场采集"}
+      - {title: "判断", note: "边缘识别"}
+      - {title: "处置", note: "结果回传"}
+    claim: "方案的核心不是单点识别，而是完整闭环"
+    visual_anchor: "斜向路径"
+    bridge_from_previous: "上一页的问题被拆成三段链路"
+    bridge_to_next: "下一页展开这套系统如何协同"
+    motion: {transition: morph, shared_ids: [motion:title, motion:trail]}
+
+  - layout_family: orbit
+    title: "一个中心，四个协同节点"
+    center: "巡检闭环"
+    items:
+      - {title: "采集"}
+      - {title: "识别"}
+      - {title: "决策"}
+      - {title: "执行"}
+    claim: "四个模块围绕同一个闭环协同"
+    visual_anchor: "中心闭环"
+    bridge_from_previous: "斜向路径进入中心系统"
+    bridge_to_next: "系统是否有效要用数据证明"
+    motion: {transition: morph, shared_ids: [motion:title, motion:trail]}
+
+  - layout_family: staircase
+    title: "能力沿着证据逐级增加"
+    items:
+      - {title: "试点", note: "完成首个真实场景"}
+      - {title: "复制", note: "扩展到多个站点"}
+      - {title: "规模", note: "形成可持续网络"}
+    claim: "项目不是一次性展示，而是逐级验证"
+    visual_anchor: "阶梯节点"
+    bridge_from_previous: "系统结构落到验证路径"
+    bridge_to_next: "最后回到一个可记住的判断"
+    motion: {transition: morph, shared_ids: [motion:title, motion:anchor]}
+
+  - layout_family: quote
+    title: "让高危作业不再需要人"
+    quote: "技术的价值，是把人带回安全的位置"
+    claim: "项目最终价值是安全、效率和闭环同时提升"
+    visual_anchor: "结尾金句"
+    bridge_from_previous: "验证路径收束为最终价值"
+    bridge_to_next: "回扣封面主张"
+    motion: {transition: morph, shared_ids: [motion:title, motion:anchor]}

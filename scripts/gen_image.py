@@ -104,7 +104,9 @@ PROVIDERS = {"pollinations": gen_pollinations, "openai": gen_openai, "custom": g
 
 
 # ---------------- 提示词构造 ----------------
-def build_prompt(spec, theme, palette, default_style):
+def build_prompt(spec, theme, palette, default_style, bible=None):
+    """把单页规格和整套视觉圣经合并成提示词。"""
+    bible = bible or {}
     kind = spec.get("kind", "background")
     parts = []
 
@@ -127,7 +129,21 @@ def build_prompt(spec, theme, palette, default_style):
     else:
         parts.append("abstract decorative graphic, subtle, low contrast, no focal subject")
 
-    parts.append(spec["prompt"])
+    parts.append(spec.get("prompt", ""))
+    for label, value in (
+        ("story claim", spec.get("claim")),
+        ("visual anchor", spec.get("visual_anchor")),
+        ("previous page continuity", spec.get("continuity_from_previous") or spec.get("continuity")),
+        ("next page continuity", spec.get("continuity_to_next")),
+        ("visual state", spec.get("visual_state")),
+        ("camera language", spec.get("camera") or bible.get("camera_language")),
+        ("subject identity", spec.get("subject") or bible.get("subject_identity")),
+        ("recurring motif", spec.get("motif") or bible.get("recurring_motif")),
+        ("material language", spec.get("materials") or bible.get("material_language")),
+        ("avoid", "; ".join(spec.get("avoid", []) or bible.get("no_go", []))),
+    ):
+        if value:
+            parts.append(f"{label}: {value}")
     if theme:
         parts.append(f"context: {theme}")
     if palette:
@@ -137,9 +153,9 @@ def build_prompt(spec, theme, palette, default_style):
     return ", ".join(parts)
 
 
-def generate_one(spec, args, theme, palette):
+def generate_one(spec, args, theme, palette, bible=None):
     w, h = spec.get("size", [1536, 864])
-    prompt = build_prompt(spec, theme, palette, args.style)
+    prompt = build_prompt(spec, theme, palette, args.style, bible=bible)
     fn = PROVIDERS[args.provider]
     print(f"  → {spec.get('key','?')}  {w}x{h}  [{spec.get('kind','background')}]")
     print(f"     {prompt[:120]}...")
@@ -213,10 +229,11 @@ def main():
         m = json.load(open(a.manifest, encoding="utf-8"))
         theme = m.get("theme", a.theme)
         palette = m.get("palette", a.palette)
+        bible = m.get("visual_bible", {})
         os.makedirs(a.outdir, exist_ok=True)
         report, ok = [], 0
         for spec in m.get("images", []):
-            data, prompt, err = generate_one(spec, a, theme, palette)
+            data, prompt, err = generate_one(spec, a, theme, palette, bible=bible)
             rec = dict(key=spec.get("key"), prompt=prompt)
             if data is None:
                 rec["status"] = "failed"
@@ -243,7 +260,7 @@ def main():
     w, h = (int(x) for x in a.size.lower().split("x"))
     spec = dict(key="x", kind=a.kind, prompt=a.prompt, size=[w, h], seed=a.seed,
                 text_area=a.text_area, style=a.style, darken=not a.no_darken)
-    data, prompt, err = generate_one(spec, a, a.theme, a.palette)
+    data, prompt, err = generate_one(spec, a, a.theme, a.palette, bible=None)
     if data is None:
         sys.exit(f"生成失败：{err}")
     d = os.path.dirname(os.path.abspath(a.out))

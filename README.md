@@ -1,3 +1,15 @@
+## v2 优化方向
+
+这一版把 PPT 生成从“逐页套版式”改成“先建立视觉圣经和故事线，再生成候选素材、安排版式节奏和连续动效”：
+
+- `references/视觉叙事系统.md`：视觉圣经、故事线、上下文账本。
+- `references/版式变体与节奏.md`：不规则版式家族和整套节奏约束。
+- `references/动画连续性规范.md`：Morph 对象命名、页面内动效和兼容性边界。
+- `scripts/compile_prompts.py`：为每个图位编译 3 张有上下文的候选提示词。
+- `scripts/deck_lint.py`：检查叙事字段、版式重复、候选图和运动对象。
+- `scripts/motion.py`：写入 Morph/淡出转场并为跨页对象命名。
+- `scripts/deck_builder.py`：新增 asym_split、diagonal、orbit、staircase、collage、quote 版式。
+
 # challenge-cup-ppt
 
 做挑战杯 / 互联网+ / 创赛路演 PPT 的 agent skill：从 100GB+ 模板素材库里按需取用，按九步工作流产出可上台的 PPT。
