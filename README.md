@@ -14,7 +14,7 @@
 - `references/视觉叙事系统.md`：视觉圣经、故事线、上下文账本。
 - `references/版式变体与节奏.md`：不规则版式家族和整套节奏约束。
 - `references/动画连续性规范.md`：Morph 对象命名、页面内动效和兼容性边界。
-- `scripts/compile_prompts.py`：为每个图位编译 3 张有上下文的候选提示词。
+- `scripts/compile_prompts.py`：按探索需要编译有上下文的候选提示词；提示词不是图片。
 - `scripts/deck_lint.py`：检查叙事字段、版式重复、候选图和运动对象。
 - `scripts/motion.py`：写入 Morph/淡出转场并为跨页对象命名。
 - `scripts/deck_builder.py`：新增 asym_split、diagonal、orbit、staircase、collage、quote 版式。
@@ -43,19 +43,21 @@ python scripts/deck_builder.py deck.json -o deck.pptx --target wps --check
 两种用法：
 
 - **给 agent 用**：`SKILL.md`（带脚本工具链）
-- **给任意聊天 AI 用**：把 `prompt.md` 里的提示词整段复制粘贴
+- **给其他 AI 用**：用 `prompt.md` 加载同一份 `SKILL.md`，并提供需要的引用文件
 
 包含：
 
 | 文件 | 作用 |
 | --- | --- |
 | `SKILL.md` | 技能主体：像设计负责人一样思考（brief→主张→结构→版式→素材→自我批评→迭代） |
-| `prompt.md` | 可直接粘贴给任意 AI 的通用版提示词（不依赖工具） |
+| `prompt.md` | 加载同一入口的简短提示，不另维护流程；实际产出依赖宿主工具 |
+| `references/代表页与交付验收.md` | 代表页、自查记录、实际文件与计划对应、分层验收 |
+| `scripts/delivery_check.py` | 核对实际页数、图片对象绑定、基本点击淡入组，不判断美观或播放 |
 | `references/` | 素材地图、配色与版式、字体与动画坑、完整经验文档 |
 | `scripts/gen_assets.py` | **自己生成素材**：图表 / 流程 / 时间轴 / 背景（透明底、主题色） |
 | `scripts/layout_check.py` | **排版自检**：文字溢出、元素重叠、字号过小、空页 |
 | `scripts/template_map.py` | **打印现成模板的结构**（每页每元素的编号/位置/文字），用于改造模板 |
-| `scripts/fill_template.py` | **把内容填进现成模板**，设计全部保留（首选路线） |
+| `scripts/fill_template.py` | 填充用户已提供或允许本地使用的模板；云盘只读参考不走下载填充路线 |
 | `scripts/deck_builder.py` | 从零生成整套 PPT（9 种页面类型，兜底方案，设计不如现成模板） |
 | `scripts/find_template.py` | 在模板索引里检索，避免加载整个素材库 |
 | `scripts/pptx_inspect.py` | PPTX 体检：页数、版式、字体、字号、占位符残留 |
@@ -184,3 +186,4 @@ pip install python-pptx
 ## License
 
 MIT
+

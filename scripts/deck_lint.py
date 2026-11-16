@@ -13,19 +13,27 @@ def load(path):
     return json.loads(raw) if path.endswith(".json") else __import__("yaml").safe_load(raw)
 
 def lint(spec):
+    if not isinstance(spec, dict):
+        return ["规格必须是包含 pages 的对象"], [], Counter()
     pages = spec.get("pages") or []
     errors, warnings = [], []
     if not isinstance(spec.get("pages"), list) or not pages:
         errors.append("规格必须包含非空 pages 列表；visual_manifest 的 slides 不能直接作为页面规格")
+        return errors, warnings, Counter()
     target = target_of(spec)
     default_transition = (spec.get("compatibility") or {}).get("preferred_transition")
     families = []
     motion_ids = []
     for i, page in enumerate(pages, 1):
+        if not isinstance(page, dict):
+            errors.append(f"P{i}: 页面规格必须是对象")
+            continue
         family = page.get("layout_family") or page.get("layout") or page.get("type", "cards")
         families.append(family)
-        required = ["claim", "visual_anchor", "bridge_from_previous", "bridge_to_next"]
+        required = ["visual_anchor"]
         missing = [k for k in required if not page.get(k)]
+        if not (page.get("claim") or page.get("purpose")):
+            missing.append("purpose/claim")
         if missing:
             warnings.append(f"P{i}: 缺少叙事字段 {', '.join(missing)}")
         motion = page.get("motion") or {}
@@ -40,27 +48,17 @@ def lint(spec):
             warnings.append(f"P{i}: 没有 motion.shared_ids，Morph 无法形成连续对象")
         if effective == "morph" and i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
             warnings.append(f"P{i}: 与上一页没有共享运动对象，页面间动画可能断开")
-        if len(motion.get("entry_groups") or []) > 3:
-            errors.append(f"P{i}: entry_groups 超过 3 组")
         if motion.get("entry_groups"):
-            warnings.append(f"P{i}: entry_groups 仅是计划，生成器未实现进入动画，需在目标软件制作验证")
+            warnings.append(f"P{i}: entry_groups 仅是计划；实际文件用 delivery_check.py 或作者工具核对，再在目标软件放映")
         if page.get("images_required", False):
             n = page.get("image_candidates", page.get("candidates", 0))
-            if n < (1 if page.get('image_revision') else 3):
-                warnings.append(f"P{i}: 图片候选不足；新风格建议3张，已确认风格的定向替图至少1张并逐图检查")
+            if not page.get("asset_bindings") and not page.get("image") and not n:
+                warnings.append(f"P{i}: 需要主题图，但尚未记录素材；候选提示词和数量不证明图片已嵌入")
         claim = str(page.get("claim", ""))
         if re.search(r"\d", claim) and not page.get("sources") and not page.get("evidence"):
             warnings.append(f"P{i}: 标题含数字但没有 evidence/sources")
-        if i > 1 and family == families[-2]:
-            warnings.append(f"P{i}: 与上一页重复版式 {family}")
     counts = Counter(families)
-    if len(counts) < min(5, len(pages)):
-        warnings.append(f"整套只使用 {len(counts)} 种版式家族，建议至少 5 种")
-    for family, count in counts.items():
-        if count > 3:
-            warnings.append(f"版式 {family} 使用 {count} 次，可能形成模板感")
-    if pages and pages[0].get("layout_family") not in ("cover", "quote", "editorial", None):
-        warnings.append("P1 建议使用 cover/quote/editorial 作为开场锚点")
+    # Names and counts cannot establish visual variety; compare actual page previews.
     return errors, warnings, counts
 
 def main():
@@ -79,3 +77,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
