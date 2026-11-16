@@ -31,7 +31,7 @@ python scripts/deck_builder.py deck.json -o deck.pptx --target wps --check
 
 # challenge-cup-ppt
 
-做挑战杯 / 互联网+ / 创赛路演 PPT 的 agent skill：从 100GB+ 模板素材库里按需取用，按九步工作流产出可上台的 PPT。
+制作创赛、路演、答辩、课程与主题班会PPT的Agent Skill：按用户类型与篇幅设计，云端素材只读参考，实际生成配图并制作可编辑页面。
 
 ## 这是什么
 
@@ -64,20 +64,17 @@ python scripts/deck_builder.py deck.json -o deck.pptx --target wps --check
 
 ## 核心思路：渐进式读取，不加载全量
 
-素材库 100+ GB，绝对不要整体加载。三层读取：
+素材库现位于用户Google Drive，**只读取，不下载**。先读[云端素材库只读规范](references/云端素材库只读规范.md)，使用三层读取：
 
 1. **查索引**（1.2 MB，秒级）
    ```bash
    python3 scripts/find_template.py 蓝色 科技 --limit 5
    python3 scripts/find_template.py --cat 红旅非遗 --min-pptx 20
    ```
-2. **只解压命中包的预览图**（几十 MB）挑模板
-3. **只解压选中的那一个 pptx**
+2. **只读检索云端文件元数据**，定位少量候选
+3. **在线预览候选的相关页面**，提炼版式与字体方法，自制可编辑页面
 
-```bash
-unzip "$PPT_LIBRARY_ZIP" "<包路径>/*预览*" -d /tmp/ppt
-unzip "$PPT_LIBRARY_ZIP" "<包路径>/xxx.pptx" -d /tmp/ppt
-```
+不下载、导出、同步、本地缓存或截图转存模板/预览/字体。`find_template.py`只查已有轻量历史索引，不能证明已访问云盘。目录和连接需实际核实；私人配置保存在不入库的`library/sources.local.json`。
 
 ## 安装
 
@@ -90,16 +87,17 @@ cp -r challenge-cup-ppt ~/.agents/skills/
 
 ## 素材库
 
-素材库本体（约 103 GB，6590 个文件）**不在本仓库**：
+素材库本体**不在本仓库**。约103GB、6590个文件是旧索引统计，当前Google Drive目录尚需核对：
 
 - GitHub 单文件上限 100 MB（素材库里 174 个 pptx 超限），单仓库建议 < 5 GB，102 GB 无法托管
-- 本仓库只放**索引 + 脚本 + 经验**，素材库用网盘托管，下载链接见 [`library/sources.json`](library/sources.json)
-- agent 先查索引，再只下载/解压需要的那一个包
+- 本仓库只放**历史索引 + 脚本 + 经验**，云端来源与只读边界见 [`library/sources.json`](library/sources.json)
+- agent先查索引/元数据，再只在线预览相关页面；不下载素材
 
-用环境变量指定素材库位置：
+可用环境变量指定本地已有轻量索引和只读配置：
 
 ```bash
-export PPT_LIBRARY_ZIP=/path/to/挑战杯PPT制作素材库.zip   # 默认 /sdcard/Download/DSH-Go/...
+export PPT_LIBRARY_CONFIG=/path/to/sources.local.json
+export PPT_LIBRARY_INDEX=/path/to/已有轻量索引.json
 ```
 
 素材库结构：
@@ -114,7 +112,7 @@ export PPT_LIBRARY_ZIP=/path/to/挑战杯PPT制作素材库.zip   # 默认 /sdca
 ## 两条路线
 
 > **素材库里的模板是设计师做的**（深色科技底、光效、图标、数据卡片）。
-> 想做出那种效果，必须改造现成模板；从零生成只能保证结构正确。
+> 先学习模板的构图、标题层级与画面层次，再按任务选择改造本地已有模板或原生重排。云端只读时不下载模板，自制图像和页面；设计质量由实际视觉成品判断。
 
 ### 路线 A：改造现成模板（默认，质量最高）
 
@@ -186,4 +184,3 @@ pip install python-pptx
 ## License
 
 MIT
-

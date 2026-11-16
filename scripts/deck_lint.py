@@ -46,8 +46,8 @@ def lint(spec):
             warnings.append(f"P{i}: entry_groups 仅是计划，生成器未实现进入动画，需在目标软件制作验证")
         if page.get("images_required", False):
             n = page.get("image_candidates", page.get("candidates", 0))
-            if n < 3:
-                warnings.append(f"P{i}: 图片候选少于 3 张")
+            if n < (1 if page.get('image_revision') else 3):
+                warnings.append(f"P{i}: 图片候选不足；新风格建议3张，已确认风格的定向替图至少1张并逐图检查")
         claim = str(page.get("claim", ""))
         if re.search(r"\d", claim) and not page.get("sources") and not page.get("evidence"):
             warnings.append(f"P{i}: 标题含数字但没有 evidence/sources")
@@ -79,4 +79,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
