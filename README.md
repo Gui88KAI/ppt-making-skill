@@ -1,5 +1,14 @@
 ## v2 优化方向
 
+本实验分支已明确新AI入口：制作请求先读 [SKILL.md](SKILL.md)，提取已知信息并只询问缺少的类型、受众、场合、时长和总页数；选型后才读取对应结构并实际生成图片。完整问答示例见 [启动问答与路由](references/启动问答与路由.md)。
+
+- 支持Skill发现的宿主根据SKILL的名称/描述加载；`agents/openai.yaml`允许Codex隐式调用。
+- 读取仓库指令的编码Agent由`AGENTS.md`指向SKILL入口。
+- 无Skill发现机制的AI仍需宿主或用户先加载入口；文件不会在任意AI中自行执行。
+- 本轮只更新实验分支；试验加载请使用独立环境，不覆盖正在使用的主线Skill。
+
+入口检查：`python scripts/intake.py brief.json`。缺类型或页数时返回缺项，不默认创赛；已知信息不重复问，完整信息不额外要求确认开始。类型表篇幅是建议，用户总页数优先，且包括封面/封底/开屏。
+
 这一版把 PPT 生成从“逐页套版式”改成“先建立视觉圣经和故事线，再生成候选素材、安排版式节奏和连续动效”：
 
 - `references/视觉叙事系统.md`：视觉圣经、故事线、上下文账本。
@@ -73,7 +82,7 @@ unzip "$PPT_LIBRARY_ZIP" "<包路径>/xxx.pptx" -d /tmp/ppt
 ## 安装
 
 ```bash
-git clone https://github.com/Gui88KAI/challenge-cup-ppt.git
+git clone https://github.com/Gui88KAI/ppt-making-skill.git challenge-cup-ppt
 cp -r challenge-cup-ppt ~/.agents/skills/
 ```
 
