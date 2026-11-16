@@ -1,6 +1,6 @@
 import os, sys
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageChops
 from pptx import Presentation
 
 EMU = 360000.0
@@ -285,12 +285,27 @@ def draw(img, shapes, ppc, T=lambda x, y: (x, y)):
         # 图片
         if sh.shape_type == 13:
             try:
-                pic = Image.open(BytesIO(sh.image.blob)).convert('RGB')
+                pic = Image.open(BytesIO(sh.image.blob)).convert('RGBA')
                 iw, ih = pic.size
                 cl, cr = sh.crop_left or 0, sh.crop_right or 0
                 ct, cb = sh.crop_top or 0, sh.crop_bottom or 0
                 pic = pic.crop((int(iw * cl), int(ih * ct), int(iw * (1 - cr)), int(ih * (1 - cb))))
                 pic = pic.resize((bw, bh))
+                # Approximate native soft-edge rendering for layout review.
+                # This is a preview operation, not an edited/exported image asset.
+                edge=sh._element.find('.//'+NS+'effectLst/'+NS+'softEdge')
+                if edge is not None:
+                    radius=max(1,float(edge.get('rad','0'))/EMU*ppc)
+                    def ramp(length):
+                        vals=[]
+                        for i in range(length):
+                            t=max(0,min(1,min(i,length-1-i)/radius))
+                            vals.append(round(255*t*t*(3-2*t)))
+                        return vals
+                    horizontal=Image.new('L',(bw,1));horizontal.putdata(ramp(bw))
+                    vertical=Image.new('L',(1,bh));vertical.putdata(ramp(bh))
+                    alpha=ImageChops.multiply(horizontal.resize((bw,bh)),vertical.resize((bw,bh)))
+                    pic.putalpha(ImageChops.multiply(pic.getchannel('A'),alpha))
                 if rot:
                     pic = pic.rotate(-rot, expand=True)
                 mask = None
@@ -300,9 +315,9 @@ def draw(img, shapes, ppc, T=lambda x, y: (x, y)):
                 cx0 = box[0] - (pic.width - bw) // 2
                 cy0 = box[1] - (pic.height - bh) // 2
                 if mask:
-                    img.paste(pic, (cx0, cy0), mask)
+                    img.paste(pic, (cx0, cy0), ImageChops.multiply(mask,pic.getchannel('A')))
                 else:
-                    img.paste(pic, (cx0, cy0))
+                    img.paste(pic, (cx0, cy0), pic.getchannel('A'))
             except Exception:
                 pass
             continue
@@ -343,4 +358,3 @@ if __name__ == '__main__':
     pages = {int(x) for x in sys.argv[3].split(',')} if len(sys.argv) > 3 else None
     fs = render(f, out, pages=pages)
     print(len(fs), '张 ->', out)
-
