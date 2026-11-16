@@ -8,6 +8,35 @@ from collections import Counter
 from pathlib import Path
 from wps_compat import motion_kind, target_of
 
+NON_CONTENT_IMAGE_ROLES = {"texture", "decoration", "title-glyph", "logo", "icon"}
+
+
+def recommended_image_slots(page_count):
+    """Return the visual-mode image coverage target for a deck page count."""
+    if page_count <= 4:
+        return 2
+    if page_count <= 8:
+        return 4
+    if page_count <= 12:
+        return 6
+    if page_count <= 15:
+        return 8
+    return 8 + (page_count - 15 + 2) // 3
+
+
+def is_meaningful_binding(binding):
+    if not isinstance(binding, dict):
+        return False
+    role = binding.get("image_role") or binding.get("role")
+    return bool(role and role not in NON_CONTENT_IMAGE_ROLES)
+
+
+def meaningful_bindings(page):
+    """Return bindings that can carry narrative imagery, excluding decor assets."""
+    return [binding for binding in (page.get("asset_bindings") or [])
+            if is_meaningful_binding(binding)]
+
+
 def load(path):
     raw = Path(path).read_text(encoding="utf-8")
     return json.loads(raw) if path.endswith(".json") else __import__("yaml").safe_load(raw)
@@ -22,8 +51,10 @@ def lint(spec):
         return errors, warnings, Counter()
     target = target_of(spec)
     default_transition = (spec.get("compatibility") or {}).get("preferred_transition")
+    visual_mode = spec.get("visual_mode") or (spec.get("visual_bible") or {}).get("visual_mode")
     families = []
     motion_ids = []
+    meaningful_slots = 0
     for i, page in enumerate(pages, 1):
         if not isinstance(page, dict):
             errors.append(f"P{i}: 页面规格必须是对象")
@@ -34,8 +65,18 @@ def lint(spec):
         missing = [k for k in required if not page.get(k)]
         if not (page.get("claim") or page.get("purpose")):
             missing.append("purpose/claim")
+        if visual_mode == "image-led":
+            for key in ("logic_role", "reading_order"):
+                if not page.get(key):
+                    missing.append(key)
         if missing:
             warnings.append(f"P{i}: 缺少叙事字段 {', '.join(missing)}")
+        if visual_mode == "image-led":
+            bindings = page.get("asset_bindings") or []
+            for binding in bindings:
+                if isinstance(binding, dict) and not (binding.get("image_role") or binding.get("role")):
+                    warnings.append(f"P{i}: 图片绑定缺少 image_role，无法区分主题图与纸纹/标题字形")
+            meaningful_slots += len(meaningful_bindings(page))
         motion = page.get("motion") or {}
         ids = set(motion.get("shared_ids") or [])
         motion_ids.append(ids)
@@ -58,6 +99,18 @@ def lint(spec):
         if re.search(r"\d", claim) and not page.get("sources") and not page.get("evidence"):
             warnings.append(f"P{i}: 标题含数字但没有 evidence/sources")
     counts = Counter(families)
+    if visual_mode == "image-led":
+        recommended = recommended_image_slots(len(pages))
+        if meaningful_slots < recommended:
+            warnings.append(
+                f"image-led 整套只有 {meaningful_slots} 个已记录主题图位，"
+                f"默认建议至少 {recommended} 个；限制生图次数时请用承担叙事的原生图示补位并记录原因"
+            )
+        for family in counts:
+            if any(all(item == family for item in families[start:start + 4])
+                   for start in range(max(0, len(families) - 3))):
+                warnings.append(f"连续4页使用版式 {family!r}；确认逻辑关系确实需要延续，否则重排节奏")
+                break
     # Names and counts cannot establish visual variety; compare actual page previews.
     return errors, warnings, counts
 
@@ -77,4 +130,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
