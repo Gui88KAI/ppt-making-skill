@@ -12,6 +12,7 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.oxml.ns import qn
 
+from deck_lint import is_meaningful_binding, recommended_image_slots
 from intake import check_pages
 
 
@@ -92,15 +93,21 @@ def inspect(path, plan=None, brief=None, base_dir=None):
     prs = Presentation(path)
     count = report["slide_count"] = len(prs.slides)
     pages = None
+    visual_mode = None
+    meaningful_image_slots = 0
+    missing_image_roles = []
     if plan is not None:
         if not isinstance(plan, dict) or not isinstance(plan.get("pages"), list) or not plan["pages"]:
             errors.append("plan 必须包含非空 pages 数组；生图 slides 不能代替实际页序")
         else:
             pages = plan["pages"]
+            visual_mode = plan.get("visual_mode") or (plan.get("visual_bible") or {}).get("visual_mode")
             if len(pages) != count:
                 errors.append(f"计划 {len(pages)} 页，实际 {count} 页")
     else:
         warnings.append("未提供逐页计划，仅生成文件清单，未核对图片/动画绑定")
+    if visual_mode is None and isinstance(brief, dict):
+        visual_mode = brief.get("visual_mode")
     if brief is not None:
         constraint, error = check_pages(brief.get("page_count") if isinstance(brief, dict) else None)
         if error:
@@ -154,6 +161,8 @@ def inspect(path, plan=None, brief=None, base_dir=None):
             if not isinstance(binding, dict):
                 errors.append(f"P{number}: 图片绑定必须是对象")
                 continue
+            if not (binding.get("image_role") or binding.get("role")):
+                missing_image_roles.append(number)
             sid, filename = binding.get("shape_id"), binding.get("file")
             if not positive_int(sid) or sid not in pictures or sid in bound:
                 errors.append(f"P{number}: 图片目标 {sid!r} 无效、非图片或重复绑定")
@@ -171,6 +180,8 @@ def inspect(path, plan=None, brief=None, base_dir=None):
                 errors.append(f"P{number}: 图片 {sid} 与绑定文件内容不一致: {filename}")
             else:
                 row["image_bindings_checked"] += 1
+                if is_meaningful_binding(binding):
+                    meaningful_image_slots += 1
         if set(pictures) - bound:
             warnings.append(f"P{number}: 图片对象 {sorted(set(pictures) - bound)} 未绑定，未证明其符合图位计划")
 
@@ -208,6 +219,24 @@ def inspect(path, plan=None, brief=None, base_dir=None):
             row["motion_comparison"] = "failed"
         else:
             row["motion_comparison"] = "matched_file_only"
+    if visual_mode == "image-led" and missing_image_roles:
+        warnings.append("图片绑定缺少 image_role: " + ", ".join(f"P{n}" for n in sorted(set(missing_image_roles))))
+    recommended_slots = recommended_image_slots(count)
+    report["visual_density"] = {
+        "visual_mode": visual_mode or "unspecified",
+        "meaningful_image_slots": meaningful_image_slots,
+        "recommended_slots": recommended_slots if visual_mode == "image-led" else None,
+        "status": "not_applicable"
+        if visual_mode != "image-led"
+        else "pass"
+        if meaningful_image_slots >= recommended_slots
+        else "insufficient",
+    }
+    if visual_mode == "image-led" and meaningful_image_slots < recommended_slots:
+        warnings.append(
+            f"image-led 实际只有 {meaningful_image_slots} 个已绑定主题图位，"
+            f"默认建议至少 {recommended_slots} 个；限制生图次数时请用承担叙事的原生图示补位并记录原因"
+        )
     report["static_status"] = "failed" if errors else "passed_with_warnings" if warnings else "passed"
     return report
 
