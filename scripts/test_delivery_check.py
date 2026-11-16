@@ -12,7 +12,7 @@ from pptx import Presentation
 from pptx.oxml.ns import qn
 from pptx.util import Inches
 
-from deck_lint import lint
+from deck_lint import lint, recommended_image_slots
 from delivery_check import inspect
 from entry_motion import click_fades
 
@@ -123,8 +123,60 @@ class DeliveryCheckTests(unittest.TestCase):
         self.assertNotEqual(run.returncode, 0)
         self.assertEqual(self.path.read_bytes(), before)
 
+    def test_image_led_density_uses_meaningful_roles_and_recommended_coverage(self):
+        self.plan["visual_mode"] = "image-led"
+        self.plan["pages"][0]["asset_bindings"][0]["image_role"] = "scene"
+        result = self.check()
+        self.assertEqual(result["visual_density"]["status"], "insufficient")
+        self.assertEqual(result["visual_density"]["meaningful_image_slots"], 1)
+        self.assertEqual(result["visual_density"]["recommended_slots"], 2)
+        self.assertEqual(result["static_status"], "passed_with_warnings")
+
 
 class PlanningPolicyTests(unittest.TestCase):
+    def test_visual_coverage_targets_scale_with_page_count(self):
+        self.assertEqual(recommended_image_slots(1), 2)
+        self.assertEqual(recommended_image_slots(8), 4)
+        self.assertEqual(recommended_image_slots(12), 6)
+        self.assertEqual(recommended_image_slots(15), 8)
+        self.assertGreater(recommended_image_slots(18), 8)
+
+    def test_image_led_plan_warns_when_theme_images_are_too_few(self):
+        page = {
+            "purpose": "具体情境进入讨论",
+            "claim": "从一次解锁看见选择入口",
+            "visual_anchor": "情境场景",
+            "logic_role": "hook",
+            "reading_order": ["问题", "场景", "提示"],
+            "layout_family": "editorial",
+            "asset_bindings": [{"image_role": "scene", "file": "scene.png", "shape_id": 1}],
+        }
+        pages = [copy.deepcopy(page) for _ in range(8)]
+        for extra in pages[2:]:
+            extra["asset_bindings"] = []
+        errors, warnings, _ = lint({
+            "visual_mode": "image-led",
+            "pages": pages,
+        })
+        self.assertFalse(errors)
+        self.assertTrue(any("默认建议至少 4 个" in item for item in warnings))
+
+    def test_theme_role_is_counted_but_texture_is_not(self):
+        page = {
+            "purpose": "比较两种边界",
+            "claim": "时间与空间各自解决一种负担",
+            "visual_anchor": "左右对照",
+            "logic_role": "comparison",
+            "reading_order": ["左侧", "右侧", "结论"],
+            "layout_family": "comparison",
+            "asset_bindings": [
+                {"image_role": "situation", "file": "scene.png", "shape_id": 1},
+                {"image_role": "texture", "file": "paper.png", "shape_id": 2},
+            ],
+        }
+        _, warnings, _ = lint({"visual_mode": "image-led", "pages": [page]})
+        self.assertTrue(any("只有 1 个已记录主题图位" in item for item in warnings))
+
     def test_small_deck_may_use_consistent_layout_and_one_selected_image(self):
         page = {"purpose": "比较同口径数据", "visual_anchor": "chart", "layout_family": "grid",
                 "images_required": True, "image_candidates": 1, "motion": {"transition": "none"}}
