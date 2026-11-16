@@ -5,6 +5,12 @@ description: 以"拿奖作品"为目标，把一份 PPT 从零做到成品的导
 
 # 做一套能拿奖的 PPT：逐页导演手册
 
+## 播放环境优先：用户要求 WPS 时
+
+读取 [`references/WPS兼容规范.md`](references/WPS兼容规范.md)，在规格中记录 `compatibility.target: wps`。该配置优先于下文、封面参考和旧脚本中的 Morph/平滑要求；默认淡出或无转场，静态页面独立可读。沿用用户已经明确的受众、场合、时长，不重复提问。版本未知可继续保守制作，保留待实机验证状态。
+
+从零生成用 `deck_builder.py --target wps --check`；模板和其他脚本输出也必须运行 `wps_compat.py`，必要时生成兼容副本。交付区分“静态检查通过”和“目标 WPS 打开放映通过”，未实测不得声称已经适配。此配置不强制改变用户指定风格，不把整页截图代替可编辑正文。
+
 ## 第 0 步：先问三件事，再动手（唯一正确的开场）
 
 > **硬规则（优先级最高）**
@@ -434,10 +440,10 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 
 动画不能每页换一个特效。每页在 `motion` 中写清 `transition`、`lead`、`shared_ids`、`entry_groups` 和 `fallback`，详见 `references/动画连续性规范.md`。
 
-- 页面之间优先使用 **Morph / 平滑**，相邻页至少共享一个 `motion:title`、`motion:hero`、`motion:anchor`、`motion:trail` 或 `motion:metric` 对象。
+- 非 WPS 目标可优先使用 **Morph / 平滑**，相邻页共享运动对象，并在支持环境实测；WPS 目标依照兼容规范优先淡出或无转场，不因缺少共享对象报错。
 - 页面内部只给讲解顺序加 1–3 组淡入、擦除或轻微缩放；不要使用弹跳、旋转、百叶窗、棋盘格。
 - 动效要表达状态变化：远景到特写、问题到方案、数字到图表、路径延伸到下一页，而不是单纯“让东西动起来”。
-- `python-pptx` 可以写入 Morph/淡出转场，但元素级进入动画要在 Windows PowerPoint 中完成；没有播放环境时必须标记 `needs_windows_animation_check: true`，不能声称已经验证。
+- 本工具链可以写入转场，但 `entry_groups` 不会自动成为元素级进入动画。内部动画在目标 PowerPoint/WPS 中制作并放映核对；没有播放环境时记录待验证，不得声称已经验证。
 
 可用 `python3 scripts/motion.py` 中的函数给对象命名并写入转场；生成前后用 `python3 scripts/deck_lint.py deck.yaml` 检查相邻页是否共享运动对象。
 
@@ -457,6 +463,7 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 | `compile_prompts.py` | **编译视觉圣经 + 逐页上下文**，为每个图位生成 3 张候选提示词 |
 | `deck_lint.py` | 检查故事字段、版式重复、候选图数量和运动对象连续性 |
 | `motion.py` | 给对象命名并写入 Morph/淡出转场；元素级动画到 Windows PowerPoint 完成 |
+| `wps_compat.py` | WPS 保守副本与实际 PPTX 资源、字体、转场静态检查；不能代替实机验证 |
 | `gen_assets.py` | 代码造素材：图表/流程/时间轴/背景 |
 | `layout_check.py` | 排版自检：溢出/重叠/字号/空页 |
 | `pptx_inspect.py` | 体检：页数/字体/字号分布 |
@@ -478,3 +485,4 @@ python3 scripts/pptx_inspect.py 输出/项目.pptx
 遇到没写的页面类型，用三条标准自己判断：观众看得懂吗？逻辑通吗？气质对吗？
 
 评委记不住的作品，做得再满也没用。**先想记忆点，再想页数。**
+

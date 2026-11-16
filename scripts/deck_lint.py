@@ -6,6 +6,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from wps_compat import motion_kind, target_of
 
 def load(path):
     raw = Path(path).read_text(encoding="utf-8")
@@ -14,6 +15,10 @@ def load(path):
 def lint(spec):
     pages = spec.get("pages") or []
     errors, warnings = [], []
+    if not isinstance(spec.get("pages"), list) or not pages:
+        errors.append("规格必须包含非空 pages 列表；visual_manifest 的 slides 不能直接作为页面规格")
+    target = target_of(spec)
+    default_transition = (spec.get("compatibility") or {}).get("preferred_transition")
     families = []
     motion_ids = []
     for i, page in enumerate(pages, 1):
@@ -26,12 +31,19 @@ def lint(spec):
         motion = page.get("motion") or {}
         ids = set(motion.get("shared_ids") or [])
         motion_ids.append(ids)
-        if not motion.get("shared_ids"):
+        try:
+            effective = motion_kind(page, target, default_transition)
+        except ValueError as exc:
+            errors.append(f"P{i}: {exc}")
+            effective = "none"
+        if effective == "morph" and not motion.get("shared_ids"):
             warnings.append(f"P{i}: 没有 motion.shared_ids，Morph 无法形成连续对象")
-        if i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
+        if effective == "morph" and i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
             warnings.append(f"P{i}: 与上一页没有共享运动对象，页面间动画可能断开")
         if len(motion.get("entry_groups") or []) > 3:
             errors.append(f"P{i}: entry_groups 超过 3 组")
+        if motion.get("entry_groups"):
+            warnings.append(f"P{i}: entry_groups 仅是计划，生成器未实现进入动画，需在目标软件制作验证")
         if page.get("images_required", False):
             n = page.get("image_candidates", page.get("candidates", 0))
             if n < 3:
@@ -67,3 +79,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

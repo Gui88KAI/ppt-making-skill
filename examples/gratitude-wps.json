@@ -1,0 +1,438 @@
+{
+  "title": "第七次主题班会：知恩于心，感恩于行",
+  "brief": {
+    "audience": "大学生",
+    "occasion": "第七次主题班会",
+    "duration_minutes": 15,
+    "requested_player": "WPS",
+    "facts_supplied": "感恩主题教育，涵养青年学生家国情怀与社会责任感",
+    "missing": "学校、班级、主持人与日期未提供，未虚构"
+  },
+  "compatibility": {
+    "target": "wps",
+    "platform": "windows",
+    "version": null,
+    "preferred_transition": "fade"
+  },
+  "theme": {
+    "main": "#9B5A32",
+    "secondary": "#382D27",
+    "accent": "#D8B56B",
+    "bg": "#FFF9EF",
+    "text": "#43382F",
+    "muted": "#766A60",
+    "line": "#E7DBCA",
+    "card": "#FBF0DF",
+    "font_title": "微软雅黑",
+    "font_body": "微软雅黑",
+    "font_num": "Arial"
+  },
+  "visual_bible": {
+    "thesis": "看见支持，把感谢落实为尊重、守信与行动",
+    "audience": "大学生",
+    "visual_metaphor": "善意的接力",
+    "recurring_motif": "暖金色的线与节点",
+    "palette": "暖白、深棕、暖金",
+    "style": "温暖、克制、便于课堂讨论",
+    "subject_identity": "概念图与原生文字，不使用虚构实拍",
+    "camera_language": "本轮使用现有代码版式，无摄影图位",
+    "no_go": [
+      "编造学校和学生经历",
+      "强迫公开私人家庭信息",
+      "把感恩变成无原则服从"
+    ],
+    "cover_echo": "结尾回扣知恩于心，感恩于行"
+  },
+  "pages": [
+    {
+      "layout_family": "cover",
+      "title": "知恩于心\n感恩于行",
+      "subtitle": "第七次主题班会 · 感恩主题教育",
+      "kicker": "主题班会",
+      "org": "把感谢落实到日常行动",
+      "visual_anchor": "主题标题",
+      "claim": "认识身边的支持，并选择一件可以完成的感恩行动",
+      "seconds": 35,
+      "speaker_notes": "开场：今天我们用十五分钟，回想一次帮助，练习一次表达，再选定一件愿意完成的小事。感谢可以真诚、具体，也尊重每个人不同的经历。",
+      "bridge_from_previous": "开场，点明班会主题",
+      "bridge_to_next": "从自己的经历出发看见他人的付出",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "quote",
+      "title": "上一次被帮助，你还记得吗？",
+      "quote": "上一次被帮助，\n你还记得吗？",
+      "note": "想一想：谁做了什么？那件事给了你什么支持？",
+      "visual_anchor": "一次具体的帮助",
+      "claim": "从自己的经历出发看见他人的付出",
+      "seconds": 85,
+      "speaker_notes": "请大家安静回想20秒，再请两位同学自愿分享，每位约20秒。可以讲同学、老师、工作人员或陌生人的帮助，不必分享家庭或私人细节。追问：对方具体做了什么？当时你有什么感受？",
+      "bridge_from_previous": "认识身边的支持，并选择一件可以完成的感恩行动",
+      "bridge_to_next": "感恩从看见平凡而具体的付出开始",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "cards",
+      "title": "成长背后，有许多人在支持",
+      "cols": 2,
+      "items": [
+        {
+          "title": "家人与亲友",
+          "note": "生活中的陪伴"
+        },
+        {
+          "title": "老师与同学",
+          "note": "学习中的指引"
+        },
+        {
+          "title": "校园工作者",
+          "note": "日常生活的守护"
+        },
+        {
+          "title": "社会中的劳动者",
+          "note": "公共服务的支持"
+        }
+      ],
+      "visual_anchor": "身边的支持",
+      "claim": "感恩从看见平凡而具体的付出开始",
+      "seconds": 60,
+      "speaker_notes": "引导同学把视线从熟悉的人扩展到校园工作人员和社会劳动者。无需给每个人的感受排序，也不要把所有家庭关系都预设为相同。让同学任选一个自己有感受的对象。",
+      "bridge_from_previous": "从自己的经历出发看见他人的付出",
+      "bridge_to_next": "说清对方的帮助与自己的回应，让感谢更真诚",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "compare",
+      "title": "一句谢谢，可以说得更具体",
+      "left": {
+        "title": "简单回应",
+        "items": [
+          "谢谢你。",
+          "你真好。"
+        ]
+      },
+      "right": {
+        "title": "具体表达",
+        "items": [
+          "谢谢你陪我理清思路。",
+          "我会认真完成，也分享方法。"
+        ]
+      },
+      "visual_anchor": "感谢表达的对比",
+      "claim": "说清对方的帮助与自己的回应，让感谢更真诚",
+      "seconds": 70,
+      "speaker_notes": "左边的表达也有价值，右边示范如何更具体。请同桌用一句话补完：谢谢你做了什么，这件事帮助我怎样，我接下来准备怎样做。避免把感谢变成必须回报的交换。",
+      "bridge_from_previous": "感恩从看见平凡而具体的付出开始",
+      "bridge_to_next": "感恩可以从倾听、表达和主动分担开始",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "bullets",
+      "title": "把感谢带回日常生活",
+      "items": [
+        "给家人或亲友一次认真倾听",
+        "向帮助过自己的人表达谢意",
+        "主动分担一件力所能及的事"
+      ],
+      "visual_anchor": "日常行动",
+      "claim": "感恩可以从倾听、表达和主动分担开始",
+      "seconds": 60,
+      "speaker_notes": "不要求花钱送礼，也不要求公开晒聊天记录。可以给亲友打电话、向支持自己的人表达感谢，或承担一件实际事务。选择适合自身处境、可以完成的行动。",
+      "bridge_from_previous": "说清对方的帮助与自己的回应，让感谢更真诚",
+      "bridge_to_next": "得到支持后，可以把可靠与善意传给他人",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "diagonal",
+      "kicker": "同伴互助",
+      "title": "把感谢变成\n同伴间的互助",
+      "items": [
+        {
+          "title": "守约",
+          "note": "答应的事认真完成"
+        },
+        {
+          "title": "回应",
+          "note": "收到帮助及时反馈"
+        },
+        {
+          "title": "接力",
+          "note": "把方法分享给需要的人"
+        }
+      ],
+      "visual_anchor": "互助接力",
+      "claim": "得到支持后，可以把可靠与善意传给他人",
+      "seconds": 65,
+      "speaker_notes": "用小组作业举例：按时完成分工，及时反馈修改，把学到的方法分享给遇到困难的同学。请大家辨认哪个动作今天就可以开始。这里的事例是讨论示例，不是某位真实同学的经历。",
+      "bridge_from_previous": "感恩可以从倾听、表达和主动分担开始",
+      "bridge_to_next": "真诚感谢可以与诚实守信和个人边界同时存在",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "quote",
+      "title": "互相帮助，也需要尊重边界",
+      "quote": "感谢帮助，\n也可以礼貌说不",
+      "note": "情境讨论：同学帮过你，后来请你替他签到，你会怎样回应？",
+      "visual_anchor": "感谢与原则",
+      "claim": "真诚感谢可以与诚实守信和个人边界同时存在",
+      "seconds": 90,
+      "speaker_notes": "明确这是虚构讨论情境。请两位同学给出回应。参考：之前你帮我，我很感谢；替签到不合适，我可以帮你补习或整理课堂资料。强调感谢不意味着答应不合理要求，更不等于容忍伤害。",
+      "bridge_from_previous": "得到支持后，可以把可靠与善意传给他人",
+      "bridge_to_next": "把感恩意识变成可以反复实践的行为习惯",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "staircase",
+      "title": "好习惯，让善意持续发生",
+      "items": [
+        {
+          "title": "看见",
+          "note": "记住具体付出"
+        },
+        {
+          "title": "表达",
+          "note": "及时说出感谢"
+        },
+        {
+          "title": "行动",
+          "note": "认真兑现承诺"
+        }
+      ],
+      "visual_anchor": "看见、表达与行动",
+      "claim": "把感恩意识变成可以反复实践的行为习惯",
+      "seconds": 65,
+      "speaker_notes": "承接上一页：坚持原则与心怀感恩可以并行。三个台阶是练习过程，不是道德评分。请同学说出自己较容易做到的一步，以及下一步准备怎样行动。",
+      "bridge_from_previous": "真诚感谢可以与诚实守信和个人边界同时存在",
+      "bridge_to_next": "尊重劳动和公共规则，是感恩的日常表达",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "cards",
+      "title": "校园里的感谢，从尊重开始",
+      "cols": 2,
+      "items": [
+        {
+          "title": "教室",
+          "note": "整理座位，带走垃圾"
+        },
+        {
+          "title": "食堂",
+          "note": "按需取餐，礼貌沟通"
+        },
+        {
+          "title": "宿舍",
+          "note": "遵守公约，主动分担"
+        },
+        {
+          "title": "课堂",
+          "note": "认真准备，尊重教学"
+        }
+      ],
+      "visual_anchor": "校园生活",
+      "claim": "尊重劳动和公共规则，是感恩的日常表达",
+      "seconds": 75,
+      "speaker_notes": "请同学在四个场景中选一个最需要改善的习惯。讨论具体做法，不点名、不评价他人。引导看到这些小事怎样减少工作人员和同伴的额外负担。",
+      "bridge_from_previous": "把感恩意识变成可以反复实践的行为习惯",
+      "bridge_to_next": "珍惜成长条件，以学习、守信和公共参与承担青年责任",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "compare",
+      "title": "家国情怀，落在青年责任里",
+      "left": {
+        "title": "今天的珍惜",
+        "items": [
+          "珍惜受教育的机会",
+          "尊重不同岗位的劳动"
+        ]
+      },
+      "right": {
+        "title": "自己的担当",
+        "items": [
+          "学好本领，认真完成任务",
+          "参与志愿服务，回应需要"
+        ]
+      },
+      "visual_anchor": "珍惜与担当",
+      "claim": "珍惜成长条件，以学习、守信和公共参与承担青年责任",
+      "seconds": 80,
+      "speaker_notes": "从校园的支持扩展到社会的协作。家国情怀可以体现为认真学习、诚实守信、尊重劳动、参与适合自己的志愿服务。鼓励把专业学习与真实社会需要联系起来，避免用空泛口号替代可做的事情。",
+      "bridge_from_previous": "尊重劳动和公共规则，是感恩的日常表达",
+      "bridge_to_next": "用对象、动作与时间，把感恩写成可以执行的计划",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "bullets",
+      "title": "写下你愿意完成的一件事",
+      "items": [
+        "我想感谢的人是 ______",
+        "我准备做的事是 ______",
+        "我会在 ______ 之前完成"
+      ],
+      "visual_anchor": "个人行动承诺",
+      "claim": "用对象、动作与时间，把感恩写成可以执行的计划",
+      "seconds": 100,
+      "speaker_notes": "留60秒让每个人写下计划，再邀请自愿分享。可写在自己的纸或手机备忘录里，不收集私人内容，不要求统一公开承诺。主持人提醒：选一件足够具体且力所能及的小事。",
+      "bridge_from_previous": "珍惜成长条件，以学习、守信和公共参与承担青年责任",
+      "bridge_to_next": "通过实践与回顾，让感谢逐渐成为习惯",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "timeline",
+      "title": "让一次行动，成为持续的习惯",
+      "items": [
+        {
+          "label": "今天",
+          "title": "确定行动",
+          "note": "具体到人和事"
+        },
+        {
+          "label": "三天内",
+          "title": "付诸实践",
+          "note": "小事也认真"
+        },
+        {
+          "label": "一周后",
+          "title": "回看与分享",
+          "note": "记录自己的改变"
+        }
+      ],
+      "visual_anchor": "行动时间轴",
+      "claim": "通过实践与回顾，让感谢逐渐成为习惯",
+      "seconds": 70,
+      "speaker_notes": "这是一项班会提出的自愿练习，不是已发生的结果或统计。建议三天内做一次，一周后自己回看：对方是否感受到尊重？我有什么改变？后续分享可自愿，不用照片或打卡证明。",
+      "bridge_from_previous": "用对象、动作与时间，把感恩写成可以执行的计划",
+      "bridge_to_next": "从一次具体行动开始，把善意带进日常生活",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    },
+    {
+      "layout_family": "closing",
+      "title": "让感谢成为行动",
+      "note": "知恩于心，感恩于行\n从今天的一件小事开始",
+      "visual_anchor": "回扣主题",
+      "claim": "从一次具体行动开始，把善意带进日常生活",
+      "seconds": 45,
+      "speaker_notes": "收束：看见支持、表达谢意、落实行动。感谢每位同学的参与。请带着刚才写下的小事离开，在适合自己的方式里实践。",
+      "bridge_from_previous": "通过实践与回顾，让感谢逐渐成为习惯",
+      "bridge_to_next": "会后实践并自愿回顾",
+      "evidence": [
+        "活动建议与讨论情境，不作为统计或真实个案"
+      ],
+      "motion": {
+        "transition": "morph",
+        "fallback": "fade",
+        "shared_ids": [
+          "motion:title"
+        ]
+      }
+    }
+  ]
+}

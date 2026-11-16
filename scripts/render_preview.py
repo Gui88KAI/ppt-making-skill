@@ -5,8 +5,12 @@ from pptx import Presentation
 
 EMU = 360000.0
 NS = '{http://schemas.openxmlformats.org/drawingml/2006/main}'
-CJK = "/system/fonts/NotoSansCJK-Regular.ttc"
-CJKB = "/system/fonts/NotoSansCJK-Bold.ttc"
+CJK = os.environ.get("PPT_PREVIEW_FONT") or next((p for p in (
+    "C:/Windows/Fonts/msyh.ttc", "/system/fonts/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc") if os.path.exists(p)), "/system/fonts/NotoSansCJK-Regular.ttc")
+CJKB = os.environ.get("PPT_PREVIEW_BOLD_FONT") or next((p for p in (
+    "C:/Windows/Fonts/msyhbd.ttc", "/system/fonts/NotoSansCJK-Bold.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc") if os.path.exists(p)), CJK)
 
 
 
@@ -323,7 +327,8 @@ def render(path, outdir, width=1400, pages=None):
     for i, s in enumerate(prs.slides, 1):
         if pages and i not in pages:
             continue
-        img = Image.new('RGB', (width, Hh), (255, 255, 255))
+        background_color = fillc(s.background) or (255, 255, 255)
+        img = Image.new('RGB', (width, Hh), background_color)
         try:
             bg = s.background
         except Exception:
@@ -338,3 +343,4 @@ if __name__ == '__main__':
     pages = {int(x) for x in sys.argv[3].split(',')} if len(sys.argv) > 3 else None
     fs = render(f, out, pages=pages)
     print(len(fs), '张 ->', out)
+

@@ -25,6 +25,8 @@ from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.util import Cm, Pt
+from wps_compat import explicit_fonts, inspect as inspect_wps, motion_kind, target_of
+from motion import apply_slide_motion
 
 # ---------- 画布 ----------
 W, H = 33.867, 19.05
@@ -200,7 +202,7 @@ def est_height(s, size_pt, width_cm, spacing=1.35):
 # ---------- 页头 / 页脚 ----------
 def page_head(slide, spec, theme):
     rect(slide, M, TITLE_Y + 0.12, 1.15, 0.42, theme["main"], radius=0)  # 顶部色块
-    text(slide, spec.get("title", ""), M + 1.55, TITLE_Y, CW - 1.55, 1.6, size=31, bold=True,
+    text(slide, spec.get("title", ""), M + 1.55, TITLE_Y, CW - 1.55, 1.6, size=32, bold=True,
          color=theme["secondary"], font=theme["font_title"], spacing=1.12)
     if spec.get("sub"):
         text(slide, spec["sub"], M + 1.58, SUB_Y, CW - 1.58, 0.9, size=18,
@@ -239,7 +241,7 @@ def p_cover(prs, theme, spec, ctx):
     rect(s, M, 11.4, 2.6, 0.14, theme["main"], radius=0)
     text(s, spec.get("subtitle", ""), M, 12.1, 19.5, 2.2, size=19,
          color=theme["text"], font=theme["font_body"], spacing=1.35)
-    text(s, spec.get("org", ""), M, 15.4, 18, 0.9, size=16, color=theme["muted"],
+    text(s, spec.get("org", ""), M, 15.4, 18, 0.9, size=18, color=theme["muted"],
          font=theme["font_body"])
 
 
@@ -363,11 +365,11 @@ def p_timeline(prs, theme, spec, ctx):
         cardh = 4.6
         y = axis - cardh - 1.1 if up else axis + 1.1
         rect(s, cx - seg / 2 + 0.2, y, seg - 0.4, cardh, theme["card"], line=theme["line"], radius=0.16)
-        text(s, it.get("label", ""), cx - seg / 2 + 0.55, y + 0.5, seg - 1.1, 0.8, size=13, bold=True,
+        text(s, it.get("label", ""), cx - seg / 2 + 0.55, y + 0.5, seg - 1.1, 0.9, size=18, bold=True,
              color=theme["main"], font=theme["font_num"])
         text(s, it.get("title", ""), cx - seg / 2 + 0.55, y + 1.45, seg - 1.1, 1.1, size=18, bold=True,
              color=theme["secondary"], font=theme["font_title"])
-        text(s, it.get("note", ""), cx - seg / 2 + 0.55, y + 2.7, seg - 1.1, 1.6, size=13,
+        text(s, it.get("note", ""), cx - seg / 2 + 0.55, y + 2.7, seg - 1.1, 1.6, size=18,
              color=theme["muted"], font=theme["font_body"], spacing=1.3)
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
@@ -446,7 +448,7 @@ def p_closing(prs, theme, spec, ctx):
          color="#FFFFFF", align="center", font=theme["font_title"])
     rect(s, W / 2 - 1.3, 10.4, 2.6, 0.14, theme["main"], radius=0)
     if spec.get("note"):
-        text(s, spec["note"], M, 11.4, CW, 1.8, size=17, color="#AEB7C4",
+        text(s, spec["note"], M, 11.4, CW, 1.8, size=18, color="#AEB7C4",
              align="center", font=theme["font_body"])
 
 
@@ -494,7 +496,7 @@ def p_diagonal(prs, theme, spec, ctx):
         text(s, f"0{i+1}", x + 0.55, yy + 0.55, 1.2, 0.8, size=20, bold=True, color=theme["main"], font=theme["font_num"])
         text(s, title, x + 0.55, yy + 1.75, 3.3, 1.1, size=19, bold=True, color=theme["secondary"], font=theme["font_title"])
         if note:
-            text(s, note, x + 0.55, yy + 3.15, 3.3, 1.65, size=14, color=theme["muted"], font=theme["font_body"])
+            text(s, note, x + 0.55, yy + 3.15, 3.3, 2.0, size=18, color=theme["muted"], font=theme["font_body"])
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
 
@@ -533,7 +535,7 @@ def p_staircase(prs, theme, spec, ctx):
         text(s, f"0{i+1}", x + 0.55, y + 0.5, 1.4, 0.8, size=20, bold=True, color=theme["main"], font=theme["font_num"])
         text(s, title, x + 0.55, y + 1.55, cw - 1.1, 1.1, size=18, bold=True, color=theme["secondary"], font=theme["font_title"])
         if note:
-            text(s, note, x + 0.55, y + 2.85, cw - 1.1, h - 3.35, size=14, color=theme["muted"], font=theme["font_body"])
+            text(s, note, x + 0.55, y + 2.85, cw - 1.1, h - 3.35, size=18, color=theme["muted"], font=theme["font_body"])
     page_foot(s, theme, ctx["n"], ctx["total"], spec)
 
 
@@ -583,23 +585,26 @@ BUILDERS = {
 
 
 def build(spec, out):
+    if not isinstance(spec.get("pages"), list) or not spec["pages"]:
+        raise ValueError("规格必须包含非空 pages 列表")
+    target = target_of(spec)
+    default_transition = (spec.get("compatibility") or {}).get("preferred_transition")
     theme = theme_of(spec)
     prs = Presentation()
     prs.slide_width = Cm(W)
     prs.slide_height = Cm(H)
     pages = spec.get("pages") or []
-    try:
-        from motion import apply_slide_motion
-    except Exception:
-        apply_slide_motion = None
     for i, page in enumerate(pages, 1):
         kind = page.get("layout_family") or page.get("layout") or page.get("type", "cards")
         fn = BUILDERS.get(kind)
         if not fn:
             raise SystemExit(f"未知页面类型: {kind}（可用: {', '.join(BUILDERS)}）")
         fn(prs, theme, page, {"n": i, "total": len(pages)})
-        if apply_slide_motion:
-            apply_slide_motion(prs.slides[-1], page)
+        apply_slide_motion(prs.slides[-1], page, target, default_transition)
+        if page.get("speaker_notes"):
+            prs.slides[-1].notes_slide.notes_text_frame.text = str(page["speaker_notes"])
+    if target == "wps":
+        explicit_fonts(prs, default=theme["font_body"])
     d = os.path.dirname(os.path.abspath(out))
     if d:
         os.makedirs(d, exist_ok=True)
@@ -612,16 +617,48 @@ def main():
     ap.add_argument("spec")
     ap.add_argument("-o", "--out", default="out.pptx")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--target", choices=["wps", "powerpoint"], help="覆盖规格中的播放目标")
     args = ap.parse_args()
     raw = open(args.spec, encoding="utf-8").read()
     spec = json.loads(raw) if args.spec.endswith(".json") else __import__("yaml").safe_load(raw)
+    if args.target:
+        spec.setdefault("compatibility", {})["target"] = args.target
+    from deck_lint import lint
+    spec_errors, spec_warnings, _ = lint(spec)
+    if spec_errors:
+        raise SystemExit("\n".join(spec_errors))
     out, n = build(spec, args.out)
     print(f"已生成 {out}（{n} 页，{os.path.getsize(out)/1024:.0f} KB）")
     if args.check:
         import subprocess
         here = os.path.dirname(os.path.abspath(__file__))
-        subprocess.run([sys.executable, os.path.join(here, "pptx_inspect.py"), out])
+        subprocess.run([sys.executable, os.path.join(here, "pptx_inspect.py"), out], check=True)
+        from layout_check import check
+        problems, _ = check(out)
+        for page, level, kind, detail in problems:
+            print(f"{level.upper()} P{page} {kind}: {detail}")
+        if target_of(spec) == "wps":
+            report = inspect_wps(out)
+            report["spec_warnings"] = spec_warnings
+            report["layout_problems"] = [{"page": p, "level": l, "kind": k, "detail": d} for p, l, k, d in problems]
+            report["compatibility_static_status"] = report["static_status"]
+            report["layout_status"] = "failed" if any(l == "error" for _, l, _, _ in problems) else "passed_with_warnings" if problems else "passed"
+            if report["layout_status"] == "failed":
+                report["static_status"] = "failed"
+            report["transition_fallbacks"] = [i for i, p in enumerate(spec["pages"], 1)
+                if (p.get("motion") or {}).get("transition") == "morph"]
+            report["unimplemented_entry_group_pages"] = [i for i, p in enumerate(spec["pages"], 1)
+                if (p.get("motion") or {}).get("entry_groups")]
+            report_path = os.path.splitext(out)[0] + ".wps-report.json"
+            with open(report_path, "w", encoding="utf-8") as stream:
+                json.dump(report, stream, ensure_ascii=False, indent=2)
+            print(f"WPS 静态报告: {report_path}；目标 WPS 实机验证尚未执行")
+            if report["errors"]:
+                raise SystemExit(1)
+        if any(level == "error" for _, level, _, _ in problems):
+            raise SystemExit(1)
 
 
 if __name__ == "__main__":
     main()
+

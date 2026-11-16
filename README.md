@@ -10,6 +10,16 @@
 - `scripts/motion.py`：写入 Morph/淡出转场并为跨页对象命名。
 - `scripts/deck_builder.py`：新增 asym_split、diagonal、orbit、staircase、collage、quote 版式。
 
+## WPS 目标环境（新增）
+
+用户指定 WPS 时读取 [WPS兼容规范](references/WPS兼容规范.md)。从零生成：
+
+```bash
+python scripts/deck_builder.py deck.json -o deck.pptx --target wps --check
+```
+
+模板改造支持 `fill_template.py ... --target wps --check`。其他脚本输出可用 `wps_compat.py input.pptx --prepare output-wps.pptx --report report.json` 制作保守副本。它们使用淡出/无转场、显式字体声明并检查实际文件资源；不会自动嵌入字体，也不能代替 WPS 打开及放映验收。
+
 # challenge-cup-ppt
 
 做挑战杯 / 互联网+ / 创赛路演 PPT 的 agent skill：从 100GB+ 模板素材库里按需取用，按九步工作流产出可上台的 PPT。
@@ -167,3 +177,4 @@ pip install python-pptx
 ## License
 
 MIT
+

@@ -1,5 +1,7 @@
 # Windows 版提示词（复制给任意 AI 用）
 
+> 用户要求 WPS 时，以下 PowerPoint 制作/验收步骤改在目标 WPS 执行，并先读取 `references/WPS兼容规范.md`。转场默认淡出或无转场，不强制 Morph；没有 WPS 环境时如实交付待验证状态。`scripts/wps_compat.py` 可制作兼容副本和静态报告，但不能证明实际播放通过。本文件中的原案例页数、字号和图数不作为其他任务的要求。
+
 > 用途：在 Windows 的 PowerPoint 环境里，接着做这个 PPT skill 的视觉打磨和动画。
 > 用法：把下面「提示词正文」整段复制给 AI（Claude Code / Cursor / ChatGPT 等），
 > 并把它能访问的仓库目录告诉它。
@@ -104,3 +106,4 @@
 目标：校赛 → 省赛
 我有的真实材料：（填你自己的照片/数据/合同）
 ```
+
