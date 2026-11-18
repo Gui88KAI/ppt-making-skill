@@ -30,20 +30,12 @@
 
 01–05 默认按[第一页封面布局](../references/封面设计规范.md#第一页封面布局)呈现完整封面。场景和文案按题材制作，用户当次给定参考优先。
 
-## 旧版封面脚本示例
+## 封面模板
 
-以下为历史示例。脚本可能生成开屏页，按当前第一页布局和总页数要求取用。
+[下载可复用封面 PPTX](../examples/cover_template.pptx)。生成器默认输出一页，支持 01–05 类型。可直接使用已构图的满幅场景，也可用 `--hero` 叠入右侧主体。需要三页逐步开屏时显式传 `--opening`，按要求计入总页数。
 
 ```bash
-# 类型 01 创赛
-python3 examples/cover_example.py --type 01 --bg ... --hero ... \
-  --title 慧飞植保 --subtitle "让每一亩地都用上无人机" --out 封面.pptx
-
-# 类型 02 商业计划书
-python3 examples/cover_example.py --type 02 --bg ... --hero ... \
-  --title 慧飞植保 --subtitle "让每一亩地都用上无人机" --out 封面.pptx
-
-# --type 会自动设置 eyebrow / palette / style，不用手填
+python scripts/make_cover.py --type 04 --title 通信之路 --subtitle 通信工程专业职业生涯规划 --bg lab.jpg --out 封面.pptx
 ```
 
 ## 各类型的关键差异（别混）
