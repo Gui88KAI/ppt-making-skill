@@ -1,0 +1,15 @@
+{
+  "mode": "built-in image_gen",
+  "calls": [
+    {
+      "operation": "generate",
+      "prompt": "Create a completely NEW premium editorial photographic background for a 16:9 Chinese student innovation presentation cover about focused learning and recording progress. This is a background asset, NOT a finished slide. NO typography, no lettering, no numbers, no logos, no watermarks anywhere. Composition: sophisticated top-down / overhead still-life photography on a warm ivory matte study desk, with the active scene concentrated on the far RIGHT 30 percent and LOWER RIGHT corner. A university student's hands in a simple forest-green cotton sleeve are naturally writing in an open cream notebook at the far right; plausible fingers and pen grip, subtle unreadable handwritten strokes only, no charts or statistics. A slim smartphone placed FACE DOWN beside a closed dark-green journal in the top-right; small tactile paper details and a simple ivory ceramic cup cropped by the far right edge. An understated warm terracotta pencil provides a small orange accent. A large soft diagonal beam of natural morning sunlight, long subtle window shadows, very fine paper texture, gentle shadows, realistic tactile photographic depth. The LEFT 68 percent and upper-left must remain a continuous warm ivory desk surface, clean and genuinely usable for huge dark-green title lettering, not a fog gradient or a separate colored panel. Keep all key props, hands and notebook within rightmost 32 percent or lower-right, ensuring the huge editable title can occupy x=5%-68%, y=12%-78% without covering subjects. The very bottom may have a slight hint of a dark green notebook edge entering from right, but left stays clear. Palette disciplined: ivory/cream, forest green, muted terracotta, natural skin, subtle warm sunlight. Elegant contemporary university/creative product editorial, inviting and energetic, premium art direction, restrained but tactile and rich. Avoid the old library interior, student portrait, clocks, glowing rings, artificial holograms, giant upright phone, sepia vintage look, repeated props, fake UI, decorative graphic text. Landscape 16:9, full bleed, very high detail."
+    },
+    {
+      "operation": "edit",
+      "prompt": "Refine this newly generated overhead desk background for a presentation. Remove ALL handwritten characters, words, letters and numbers from BOTH pages of the open notebook. Replace them with clean blank cream paper with only extremely faint ruled lines, no glyphs or symbols. The pen nib can touch the blank paper. Preserve the exact scene, hands, anatomy, natural light, shadows, framing, face-down phone, green journal, orange pencil and large left text area. No added typography, no logos, no watermark. Landscape 16:9. This is a background only: final editable title will be placed separately in PowerPoint."
+    }
+  ],
+  "embedded_pptx": "大字封面-逐字文本框.pptx",
+  "embedded_image_sha256": "285b412095a2d3c531a95cb515e5acf7a8a95c99395148a9c357497acc33d2e1"
+}
