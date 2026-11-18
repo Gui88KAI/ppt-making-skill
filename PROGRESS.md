@@ -1,5 +1,7 @@
 # 项目进展（PROGRESS）
 
+> 历史记录：以下为旧版过程和示例，不是当前运行规则。五类导航及现行要求以 [SKILL.md](SKILL.md) 与所选方向GUIDE为准；旧的39页、素材路径和评分结论不可作为通用要求。
+
 > 这份文档记录这个 PPT skill 的目标、已完成能力、关键决策和待办。
 > **即使对话上下文被压缩，看这份文档也能完整续上。**
 > 最后更新：2026-11-11
@@ -157,3 +159,4 @@ python3 examples/cover_example.py --type 01 \
 - `github.com:443` 经常被墙，**git push 不通时用 api.github.com 的 Git Data API 上传**
 - LibreOffice 装了但启动不了（Android 限制 `/proc/version`），**无法真实渲染 PPT**，
   只能用自制 PIL 渲染器近似检查（透明、渐变会有偏差）
+
