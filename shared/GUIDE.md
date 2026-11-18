@@ -4,7 +4,7 @@
 
 - 生图和边缘处理：[配图生成规范](../references/配图生成规范.md)、[用户偏好](../references/用户偏好与反馈沉淀.md)。有原生工具时实际调用，独立主题图不重复；用户认可原图只修边时保留原图。
 - Google Drive素材：[云端只读规范](../references/云端素材库只读规范.md)。只允许检索及在线查看，不下载、导出、缓存、截图转存或修改文件。
-- PPTX导出与检查：`scripts/deck_builder.py` 是兜底生成器，不负责自主问答、创作配图或审美判断；`scripts/delivery_check.py`、`layout_check.py`、`image_usage_check.py` 只检查相应对象和结构。
+- PPTX导出与检查：`scripts/deck_builder.py` 是兜底生成器，不负责自主问答、创作配图或审美判断；`scripts/delivery_check.py`、`layout_check.py`、`image_usage_check.py` 只检查相应对象和结构。`scripts/title_editability_check.py` 可核对命名的艺术标题是否逐字为独立原生文本框，不代替WPS实机检查。
 - WPS目标：[WPS兼容规范](../references/WPS兼容规范.md)、`scripts/wps_compat.py`。静态检查、实际渲染和目标软件放映分别记录。
 - 代表页及交付：[代表页与交付验收](../references/代表页与交付验收.md)。其中通用检查不覆盖各方向专用的用途与审美评价。
 
