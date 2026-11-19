@@ -77,7 +77,7 @@ def main():
     tiny = [s for s in sizes if s < 14]
     small = [s for s in sizes if 14 <= s < 18]
     if tiny:
-        print(f"\n⚠ 有 {sum(sizes[s] for s in tiny)} 处字号小于 14pt，投影几乎看不清")
+        print(f"\n[警告] 有 {sum(sizes[s] for s in tiny)} 处字号小于 14pt，投影几乎看不清")
     if small:
         print(f"提示: {sum(sizes[s] for s in small)} 处 14–17pt，用于注释/来源是正常的，正文应 ≥18pt")
     if only_fonts:
@@ -104,7 +104,7 @@ def main():
     if warnings:
         print("\n检查提示:")
         for w in warnings:
-            print("  ⚠", w)
+            print("  [警告]", w)
     else:
         print("\n检查提示: 未发现明显问题（占位符/字数）")
 

@@ -31,6 +31,8 @@ import sys
 import yaml
 from pptx import Presentation
 from pptx.util import Cm
+from wps_compat import explicit_fonts, inspect as inspect_wps
+from motion import transition
 
 MSO_PICTURE = 13
 
@@ -136,6 +138,8 @@ def main():
     ap.add_argument("template")
     ap.add_argument("mapping")
     ap.add_argument("-o", "--out", required=True)
+    ap.add_argument("--target", choices=["wps", "powerpoint"], default="powerpoint")
+    ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
 
     m = yaml.safe_load(open(a.mapping, encoding="utf-8")) or {}
@@ -175,9 +179,23 @@ def main():
     d = os.path.dirname(os.path.abspath(a.out))
     if d:
         os.makedirs(d, exist_ok=True)
+    if a.target == "wps":
+        explicit_fonts(prs)
+        for slide in prs.slides:
+            transition(slide, "fade")
     prs.save(a.out)
     print(f"完成：替换文字 {done['text']} 处、图片 {done['image']} 张 → {a.out}")
+    if a.target == "wps" and a.check:
+        import json
+        report = inspect_wps(a.out)
+        report_path = os.path.splitext(a.out)[0] + ".wps-report.json"
+        with open(report_path, "w", encoding="utf-8") as stream:
+            json.dump(report, stream, ensure_ascii=False, indent=2)
+        print(f"WPS 静态报告: {report_path}；目标 WPS 实机验证尚未执行")
+        if report["errors"]:
+            raise SystemExit(1)
 
 
 if __name__ == "__main__":
     main()
+

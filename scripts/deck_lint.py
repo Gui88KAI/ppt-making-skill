@@ -6,49 +6,112 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from wps_compat import motion_kind, target_of
+
+NON_CONTENT_IMAGE_ROLES = {"texture", "decoration", "title-glyph", "logo", "icon"}
+
+
+def recommended_image_slots(page_count):
+    """Return the visual-mode image coverage target for a deck page count."""
+    if page_count <= 4:
+        return 2
+    if page_count <= 8:
+        return 4
+    if page_count <= 12:
+        return 6
+    if page_count <= 15:
+        return 8
+    return 8 + (page_count - 15 + 2) // 3
+
+
+def is_meaningful_binding(binding):
+    if not isinstance(binding, dict):
+        return False
+    role = binding.get("image_role") or binding.get("role")
+    return bool(role and role not in NON_CONTENT_IMAGE_ROLES)
+
+
+def meaningful_bindings(page):
+    """Return bindings that can carry narrative imagery, excluding decor assets."""
+    return [binding for binding in (page.get("asset_bindings") or [])
+            if is_meaningful_binding(binding)]
+
 
 def load(path):
     raw = Path(path).read_text(encoding="utf-8")
     return json.loads(raw) if path.endswith(".json") else __import__("yaml").safe_load(raw)
 
 def lint(spec):
+    if not isinstance(spec, dict):
+        return ["规格必须是包含 pages 的对象"], [], Counter()
     pages = spec.get("pages") or []
     errors, warnings = [], []
+    if not isinstance(spec.get("pages"), list) or not pages:
+        errors.append("规格必须包含非空 pages 列表；visual_manifest 的 slides 不能直接作为页面规格")
+        return errors, warnings, Counter()
+    target = target_of(spec)
+    default_transition = (spec.get("compatibility") or {}).get("preferred_transition")
+    visual_mode = spec.get("visual_mode") or (spec.get("visual_bible") or {}).get("visual_mode")
     families = []
     motion_ids = []
+    meaningful_slots = 0
     for i, page in enumerate(pages, 1):
+        if not isinstance(page, dict):
+            errors.append(f"P{i}: 页面规格必须是对象")
+            continue
         family = page.get("layout_family") or page.get("layout") or page.get("type", "cards")
         families.append(family)
-        required = ["claim", "visual_anchor", "bridge_from_previous", "bridge_to_next"]
+        required = ["visual_anchor"]
         missing = [k for k in required if not page.get(k)]
+        if not (page.get("claim") or page.get("purpose")):
+            missing.append("purpose/claim")
+        if visual_mode == "image-led":
+            for key in ("logic_role", "reading_order"):
+                if not page.get(key):
+                    missing.append(key)
         if missing:
             warnings.append(f"P{i}: 缺少叙事字段 {', '.join(missing)}")
+        if visual_mode == "image-led":
+            bindings = page.get("asset_bindings") or []
+            for binding in bindings:
+                if isinstance(binding, dict) and not (binding.get("image_role") or binding.get("role")):
+                    warnings.append(f"P{i}: 图片绑定缺少 image_role，无法区分主题图与纸纹/标题字形")
+            meaningful_slots += len(meaningful_bindings(page))
         motion = page.get("motion") or {}
         ids = set(motion.get("shared_ids") or [])
         motion_ids.append(ids)
-        if not motion.get("shared_ids"):
+        try:
+            effective = motion_kind(page, target, default_transition)
+        except ValueError as exc:
+            errors.append(f"P{i}: {exc}")
+            effective = "none"
+        if effective == "morph" and not motion.get("shared_ids"):
             warnings.append(f"P{i}: 没有 motion.shared_ids，Morph 无法形成连续对象")
-        if i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
+        if effective == "morph" and i > 1 and motion_ids[-2] and ids and not (motion_ids[-2] & ids):
             warnings.append(f"P{i}: 与上一页没有共享运动对象，页面间动画可能断开")
-        if len(motion.get("entry_groups") or []) > 3:
-            errors.append(f"P{i}: entry_groups 超过 3 组")
+        if motion.get("entry_groups"):
+            warnings.append(f"P{i}: entry_groups 仅是计划；实际文件用 delivery_check.py 或作者工具核对，再在目标软件放映")
         if page.get("images_required", False):
             n = page.get("image_candidates", page.get("candidates", 0))
-            if n < 3:
-                warnings.append(f"P{i}: 图片候选少于 3 张")
+            if not page.get("asset_bindings") and not page.get("image") and not n:
+                warnings.append(f"P{i}: 需要主题图，但尚未记录素材；候选提示词和数量不证明图片已嵌入")
         claim = str(page.get("claim", ""))
         if re.search(r"\d", claim) and not page.get("sources") and not page.get("evidence"):
             warnings.append(f"P{i}: 标题含数字但没有 evidence/sources")
-        if i > 1 and family == families[-2]:
-            warnings.append(f"P{i}: 与上一页重复版式 {family}")
     counts = Counter(families)
-    if len(counts) < min(5, len(pages)):
-        warnings.append(f"整套只使用 {len(counts)} 种版式家族，建议至少 5 种")
-    for family, count in counts.items():
-        if count > 3:
-            warnings.append(f"版式 {family} 使用 {count} 次，可能形成模板感")
-    if pages and pages[0].get("layout_family") not in ("cover", "quote", "editorial", None):
-        warnings.append("P1 建议使用 cover/quote/editorial 作为开场锚点")
+    if visual_mode == "image-led":
+        recommended = recommended_image_slots(len(pages))
+        if meaningful_slots < recommended:
+            warnings.append(
+                f"image-led 整套只有 {meaningful_slots} 个已记录主题图位，"
+                f"默认建议至少 {recommended} 个；限制生图次数时请用承担叙事的原生图示补位并记录原因"
+            )
+        for family in counts:
+            if any(all(item == family for item in families[start:start + 4])
+                   for start in range(max(0, len(families) - 3))):
+                warnings.append(f"连续4页使用版式 {family!r}；确认逻辑关系确实需要延续，否则重排节奏")
+                break
+    # Names and counts cannot establish visual variety; compare actual page previews.
     return errors, warnings, counts
 
 def main():

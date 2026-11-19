@@ -105,7 +105,10 @@ def check(path):
             if w <= 0 or h <= 0:
                 continue
             if x < -SAFE or y < -SAFE or x + w > W + SAFE or y + h > H + SAFE:
-                continue  # 故意出血的装饰元素，跳过
+                if sh.has_text_frame and sh.text_frame.text.strip() and is_body(sh):
+                    problems.append((si, "error", "正文出界",
+                                     f"「{sh.text_frame.text.strip()[:16]}」超出画布，不能作为装饰出血跳过"))
+                continue  # 仅无正文的装饰元素允许出血
             if x < MARGIN * 0.5 or y < MARGIN * 0.5 or x + w > W - MARGIN * 0.5 or y + h > H - MARGIN * 0.5:
                 if (sh.has_text_frame and sh.text_frame.text.strip() and is_body(sh)):
                     problems.append((si, "warn", "贴边太近",
@@ -160,3 +163,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

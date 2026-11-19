@@ -1,0 +1,14 @@
+{
+  "family": "Ma Shan Zheng",
+  "version_scope": "Current unapproved visual candidate; not a mandatory font for all decks",
+  "source": "https://github.com/google/fonts/tree/main/ofl/mashanzheng",
+  "download": "https://raw.githubusercontent.com/google/fonts/main/ofl/mashanzheng/MaShanZheng-Regular.ttf",
+  "license": "SIL Open Font License 1.1",
+  "license_url": "https://raw.githubusercontent.com/google/fonts/main/ofl/mashanzheng/OFL.txt",
+  "sha256": "6d2546bb189c732a8ca29af9e22457b152387d158aa459e4ac2ce1e51788b7fb",
+  "git_blob_sha": "11bbfb9867d70612158229d037e7a5f622bd0e38",
+  "byte_count": 5857936,
+  "font_embedded_in_pptx": false,
+  "system_font_installed_by_this_task": false,
+  "native_wps_validation": "not_performed"
+}

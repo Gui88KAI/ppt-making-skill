@@ -6,9 +6,9 @@ import json
 from pathlib import Path
 
 VARIATIONS = [
-    "documentary and restrained, natural imperfections, believable scale",
-    "premium editorial photograph, controlled highlights, refined composition",
-    "cinematic but physically plausible, strong depth and a clear visual hierarchy",
+    "preserve the specified medium and style; explore clear subject placement and text space",
+    "preserve the specified medium and style; explore a different viewpoint or crop",
+    "preserve the specified medium and style; explore depth and focal hierarchy",
 ]
 
 def stable_seed(base, slide_no, candidate):
@@ -41,8 +41,10 @@ def main():
     ap = argparse.ArgumentParser(description="编译有上下文的 PPT 配图提示词")
     ap.add_argument("manifest")
     ap.add_argument("-o", "--out", default="prompts.json")
-    ap.add_argument("--candidates", type=int, default=3)
+    ap.add_argument("--candidates", type=int, default=1, help="每图位的提示词数量；新风格探索可增加，不代表已生成图片")
     args = ap.parse_args()
+    if args.candidates < 1:
+        ap.error("--candidates 必须是正整数")
     raw = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
     bible = raw.get("visual_bible") or {}
     base_seed = bible.get("seed", bible.get("thesis", "ppt"))
@@ -70,9 +72,10 @@ def main():
         "visual_bible": bible,
         "images": images,
         "selection_rule": {
-            "minimum_candidates_per_slide": max(1, args.candidates),
-            "score_threshold": 78,
-            "score_dimensions": ["topic_fit", "subject_consistency", "composition", "lighting", "craft"],
+            "requested_prompt_variants_per_slot": args.candidates,
+            "actual_images_generated": 0,
+            "review_dimensions": ["topic_fit", "subject_consistency", "composition", "lighting", "craft"],
+            "completion_basis": "Inspect actual images in the page composition; no score threshold or candidate quota proves completion",
         },
     }
     Path(args.out).write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -80,3 +83,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

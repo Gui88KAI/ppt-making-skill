@@ -1,26 +1,19 @@
 {
-  "_说明": "素材库托管信息。把分享链接填进 url/code 字段，agent 读取本文件即可知道去哪下载。",
-  "total_gb": 102.4,
-  "total_files": 6590,
-  "sources": [
-    {
-      "name": "百度网盘-999套PPT模板",
-      "provider": "baidu",
-      "url": "",
-      "code": "",
-      "index_prefix": "挑战杯PPT素材合集/01-百度网盘-999套PPT模板",
-      "files": 4633,
-      "gb": 74.19
-    },
-    {
-      "name": "夸克-创赛挑战杯",
-      "provider": "quark",
-      "url": "",
-      "code": "",
-      "index_prefix": "挑战杯PPT素材合集/02-夸克-创赛挑战杯",
-      "files": 1956,
-      "gb": 28.21
-    }
-  ],
-  "note": "网盘链接为空时，agent 应提示用户先填写，或从本地 PPT_LIBRARY_ZIP 读取。"
+  "schema_version": 2,
+  "provider": "google_drive",
+  "access_mode": "read_only_online",
+  "folder_url": null,
+  "folder_id": null,
+  "connection_status": "check_at_runtime",
+  "allow_download": false,
+  "allow_export": false,
+  "allow_sync": false,
+  "allow_local_cache": false,
+  "local_override": "library/sources.local.json",
+  "index": {
+    "path": "assets/模板索引.json",
+    "status": "legacy_unverified",
+    "note": "历史压缩包索引，仅作检索线索；未核对当前Google Drive目录。"
+  },
+  "note": "只检索目录、元数据和在线预览；不下载/导出/同步/缓存/截图转存。私人账号与目录放本地配置，不发布凭据。目录可由已连接工具只读搜索定位。旧PPT_LIBRARY_ZIP不是当前默认来源。"
 }
