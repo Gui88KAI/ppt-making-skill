@@ -28,7 +28,7 @@
 
 用 **PowerPoint 2019/365** 或 **WPS 专业版** 打开生成的 pptx，逐页检查：
 
-- [ ] 字体是否缺失（弹「字体找不到」说明要装 `templates/fonts/` 里的字体）
+- [ ] 字体是否缺失（按实际字体缺项选择目标设备可用的字体，并复查版式）
 - [ ] 文字有没有溢出文本框
 - [ ] 图片是否被裁切错位
 - [ ] 色块/渐变是否和设计稿一致
@@ -84,8 +84,7 @@ python examples/build_chuang39.py --out 创赛样本.pptx --assets ./assets
 # 2. 装依赖
 pip install python-pptx pillow matplotlib pyyaml requests
 
-# 3. 装字体（关键）：把 templates\fonts\ 里的字体全选 → 右键 → 安装
-#    然后重启 PowerPoint，否则字体不生效
+# 3. 按样式需要配置字体，模板字体仅供可选使用
 
 # 4. 验证
 python -c "import pptx; print(pptx.__version__)"
@@ -99,7 +98,6 @@ python -c "import pptx; print(pptx.__version__)"
 - 阿里巴巴普惠体
 - 思源黑体
 
-素材库完整字体在：`挑战杯PPT素材库/02-夸克-创赛挑战杯/02-蓝色-科技/字体/`（385 个）。
 
 ---
 
@@ -115,3 +113,4 @@ python -c "import pptx; print(pptx.__version__)"
 - [ ] 页码、页脚、眉标统一
 - [ ] 数字有来源标注
 - [ ] 放映模式通看一遍，计时
+

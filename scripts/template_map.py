@@ -15,7 +15,17 @@ import json
 import sys
 
 from pptx import Presentation
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.util import Emu
+
+
+def iter_shape_paths(shapes, prefix=""):
+    """Yield zero-based paths such as 4.2.0, including nested groups."""
+    for index, shape in enumerate(shapes):
+        path = f"{prefix}{index}"
+        yield path, shape
+        if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+            yield from iter_shape_paths(shape.shapes, f"{path}.")
 
 
 def cm(v):
@@ -62,9 +72,9 @@ def main():
         if a.slide and si != a.slide:
             continue
         shapes = []
-        for idx, sh in enumerate(slide.shapes):
+        for path, sh in iter_shape_paths(slide.shapes):
             info = shape_info(sh)
-            info["idx"] = idx
+            info["idx"] = int(path) if "." not in path else path
             shapes.append(info)
         out.append({"slide": si, "layout": slide.slide_layout.name, "shapes": shapes})
 
@@ -94,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

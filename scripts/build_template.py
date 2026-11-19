@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""build_template.py — 按素材库逆向出的「中密度配方」生成一套 PPT。
+"""build_template.py — 按历史版式样本归纳的「中密度配方」生成一套 PPT。
 
 配方来源：references/模板逆向规范.md（20 套模板、471 页统计），中密度档 20–36 元素/页。
 
@@ -386,3 +386,4 @@ if __name__ == "__main__":
     from deck_content import DECK
     out, n = build(DECK, a.out, a.theme, a.pages or None)
     print(f"已生成 {out}（{n} 页，{os.path.getsize(out)/1024:.0f} KB）")
+

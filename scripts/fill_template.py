@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""fill_template.py — 把内容填进现成模板，保留原有设计（最重要的路线）。
+"""fill_template.py — 用户指定模板时，按映射填充一份副本。
 
-做法：克隆素材库里的漂亮模板，只替换文字和图片，版式/配色/装饰全部不动。
+编号来自 template_map.py。顶层使用整数，组内使用点分路径，如 "4.2.0"。
 
 用法:
     # 1. 先看模板结构
@@ -22,20 +22,16 @@
     texts   {元素编号: "新文字"}，保留原元素的字体/字号/颜色/位置
     images  {元素编号: "图片路径"}，按原位置和大小铺满（等比裁切）
     delete  删除这些页（从大到小自动处理）
-    keep_text  设为 true 时，没在 texts 里列出的元素保持原样（默认就是 true）
 """
 import argparse
 import os
-import sys
+from copy import deepcopy
 
 import yaml
 from pptx import Presentation
-from pptx.util import Cm
+from template_map import iter_shape_paths
 from wps_compat import explicit_fonts, inspect as inspect_wps
 from motion import transition
-
-MSO_PICTURE = 13
-
 
 def set_text(shape, new_text):
     """替换文字，保留第一个 run 的字体格式。"""
@@ -52,7 +48,7 @@ def set_text(shape, new_text):
     if src is None:
         tf.text = new_text
         return
-    font = src.font
+    run_properties = deepcopy(src._r.rPr)
     try:
         align = tf.paragraphs[0].alignment
         line_spacing = tf.paragraphs[0].line_spacing
@@ -63,40 +59,20 @@ def set_text(shape, new_text):
     for p in list(tf.paragraphs)[1:]:
         p._p.getparent().remove(p._p)
     first = tf.paragraphs[0]
-    for r in list(first.runs)[1:]:
+    for r in list(first.runs):
         r._r.getparent().remove(r._r)
-    first.runs[0].text = "" if not first.runs else first.runs[0].text
 
     lines = str(new_text).split("\n")
-    if not first.runs:
-        run = first.add_run()
-    else:
-        run = first.runs[0]
-        run.text = lines[0]
-    run.font.size = font.size
-    run.font.bold = font.bold
-    run.font.name = font.name
-    try:
-        if font.color and font.color.type is not None:
-            run.font.color.rgb = font.color.rgb
-    except Exception:
-        pass
-    for line in lines[1:]:
-        p = tf.add_paragraph()
+    for index, line in enumerate(lines):
+        p = tf.add_paragraph() if index else first
         if align is not None:
             p.alignment = align
         if line_spacing:
             p.line_spacing = line_spacing
         r = p.add_run()
         r.text = line
-        r.font.size = font.size
-        r.font.bold = font.bold
-        r.font.name = font.name
-        try:
-            if font.color and font.color.type is not None:
-                r.font.color.rgb = font.color.rgb
-        except Exception:
-            pass
+        if run_properties is not None:
+            r._r.insert(0, deepcopy(run_properties))
 
 
 def cover_crop(pic, box_w_cm, box_h_cm):
@@ -112,13 +88,15 @@ def cover_crop(pic, box_w_cm, box_h_cm):
         pic.crop_top = pic.crop_bottom = over / 2
 
 
-def replace_image(prs, slide, shape, path):
+def replace_image(slide, shape, path):
     x, y, w, h = shape.left, shape.top, shape.width, shape.height
     new = slide.shapes.add_picture(path, x, y, w, h)
     try:
         cover_crop(new, w / 360000, h / 360000)
     except Exception:
         pass
+    # Keep both z-order and the coordinate system of the original group.
+    shape._element.addnext(new._element)
     shape._element.getparent().remove(shape._element)
     return new
 
@@ -142,28 +120,31 @@ def main():
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
 
-    m = yaml.safe_load(open(a.mapping, encoding="utf-8")) or {}
+    with open(a.mapping, encoding="utf-8") as stream:
+        m = yaml.safe_load(stream) or {}
     prs = Presentation(a.template)
     slides = list(prs.slides)
 
     done = {"text": 0, "image": 0}
     for item in m.get("slides") or []:
         idx = int(item["index"]) - 1
-        if idx >= len(slides):
+        if not 0 <= idx < len(slides):
             print(f"⚠ 跳过第 {item['index']} 页：模板只有 {len(slides)} 页")
             continue
         slide = slides[idx]
-        shapes = list(slide.shapes)
+        shapes = dict(iter_shape_paths(slide.shapes))
         for sidx, txt in (item.get("texts") or {}).items():
-            sidx = int(sidx)
-            if sidx < len(shapes):
-                set_text(shapes[sidx], txt)
-                done["text"] += 1
+            shape = shapes.get(str(sidx))
+            if shape is None or not shape.has_text_frame:
+                ap.error(f"第 {idx + 1} 页的元素 {sidx} 不是可填充的文本框")
+            set_text(shape, txt)
+            done["text"] += 1
         for sidx, path in (item.get("images") or {}).items():
-            sidx = int(sidx)
-            if sidx < len(shapes) and os.path.exists(path):
-                replace_image(prs, slide, shapes[sidx], path)
-                done["image"] += 1
+            shape = shapes.get(str(sidx))
+            if shape is None or not os.path.isfile(path):
+                ap.error(f"第 {idx + 1} 页的图片映射 {sidx} 无效：{path}")
+            replace_image(slide, shape, path)
+            done["image"] += 1
 
     if m.get("delete"):
         delete_slides(prs, [int(x) for x in m["delete"]])

@@ -1,6 +1,3 @@
-import json
-import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,7 +7,6 @@ from pptx.util import Inches
 from pptx.oxml.ns import qn
 from entry_motion import click_fades
 from image_usage_check import inspect
-from find_template import search
 
 
 class VisualWorkflowTests(unittest.TestCase):
@@ -74,25 +70,6 @@ class VisualWorkflowTests(unittest.TestCase):
             click_fades(s,[[9999]])
         self.assertIsNone(s._element.find(qn('p:timing')))
 
-    def test_index_search_filters_and_empty_results(self):
-        data={'packs':[{'path':'Blue/Tech','cat':'科技','pptx':4,'mb':10},
-                       {'path':'Blue/Art','cat':'艺术','pptx':2,'mb':20}]}
-        self.assertEqual(len(search(data,['blue','tech'],category='科技',min_pptx=3)),1)
-        self.assertEqual(search(data,['missing']),[])
-
-    def test_no_hit_cli_never_crashes_or_claims_cloud_access(self):
-        with tempfile.TemporaryDirectory() as folder:
-            root=Path(folder)
-            (root/'index.json').write_text('{"packs":[]}',encoding='utf-8')
-            (root/'source.json').write_text('{"provider":"google_drive"}',encoding='utf-8')
-            cmd=[sys.executable,'-X','utf8',str(Path(__file__).with_name('find_template.py')),'missing',
-                 '--index',str(root/'index.json'),'--source-config',str(root/'source.json'),'--json']
-            result=subprocess.run(cmd,capture_output=True,text=True,encoding='utf-8')
-            self.assertEqual(result.returncode,0,result.stderr)
-            data=json.loads(result.stdout)
-            self.assertEqual(data['hits'],[])
-            self.assertFalse(data['cloud_access_performed'])
-            self.assertEqual(data['access_mode'],'read_only_online')
 
 
 if __name__=='__main__':

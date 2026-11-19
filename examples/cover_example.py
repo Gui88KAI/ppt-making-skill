@@ -49,7 +49,7 @@ PALETTES = {
 CJK = "/system/fonts/NotoSansCJK-Regular.ttc"
 FT = "/usr/share/fonts/truetype/custom/"
 
-# 四种字体方案（统计自素材库 40 套模板，见 references/字体方案.md）
+# 四种字体方案（依据 40 套历史样本，见 references/字体方案.md）
 FONT_STACKS = {
     "culture": dict(sub=FT + "华文楷体.TTF",
                     body=FT + "思源宋体 CN Light.otf",
@@ -241,3 +241,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

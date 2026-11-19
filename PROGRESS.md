@@ -17,8 +17,7 @@
 不是模板填充工具，是「设计负责人」的思考框架 + 可执行的工具链。
 
 仓库：https://github.com/Gui88KAI/ppt-making-skill
-本地：`/root/workspace/challenge-cup-ppt/`
-技能安装位置：`~/.agents/skills/challenge-cup-ppt/`（待确认队列：`~/.dsh/memories/pending-skills/challenge-cup-ppt/`）
+技能安装目录名使用 `ppt-making-skill`。
 
 ---
 
@@ -88,7 +87,6 @@ python3 examples/cover_example.py --type 01 \
 
 - `templates/`：3 套真实模板（tech 31MB / red 34MB / rural 20MB）+ 9 个字体
 - `templates/fonts/`：思源宋体、汉仪旗黑/雅酷黑、演示流云楷、阿里巴巴普惠体
-- 素材库（100GB+）在本地 `/sdcard/挑战杯PPT制作素材库.zip`，不进仓库
 
 ### 5. 排版与质检
 
@@ -108,7 +106,7 @@ python3 examples/cover_example.py --type 01 \
 | `文案句式库.md` | 标题即结论、各页型句式、空话黑名单 |
 | `评审逻辑.md` | 四维评分 → 页面映射、答辩问题预测 |
 | `PPT制作经验.md` | 早期经验总结 |
-| `素材地图.md` / `配色与版式.md` / `字体与动画坑.md` | 辅助参考 |
+| `配色与版式.md` / `字体与动画坑.md` | 辅助参考 |
 
 ---
 
@@ -122,8 +120,7 @@ python3 examples/cover_example.py --type 01 \
 | **人物非写实（油画/素描/水彩）** | 规避肖像权，且和真实照片背景更容易融合 |
 | **前景遮挡比调色更重要** | 从背景底部裁一条盖住人物下半身，人才"在景里" |
 | **配图必须自己生成** | 精品 PPT 的高级感来自照片级背景，色块堆不出来 |
-| **不强行统一字体** | 素材库统计显示副标题用了 8 种以上字体，按气质选 |
-| **模板改造优先于从零生成** | 从零画只有 8–12 个元素，精品是 76–118 个，差一个数量级 |
+| **不强行统一字体** | 历史样本显示副标题用了 8 种以上字体，按气质选 |
 
 ---
 
@@ -144,7 +141,6 @@ python3 examples/cover_example.py --type 01 \
 - [ ] 内页版式对齐精品（加图标、加装饰、加真实照片）
 - [ ] 封面加"居中构图"和"多行标题"两种版式
 - [ ] 补动画（元素级进入）
-- [ ] 真实照片素材库（Wikimedia CC 图片 + 版权信息）
 - [ ] 把实际生成的成套 PPT 作为 examples 放进仓库
 
 ---

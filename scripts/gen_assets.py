@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """gen_assets.py — 生成 PPT 需要的素材，不要截图拼凑。
 
-四种素材，全部按主题色生成、透明背景、2 倍分辨率，可直接放进模板图片框：
+四种素材均按主题色生成。图表、流程和时间轴默认透明，底图为不透明背景：
 
     # 1. 图表（bar / hbar / line / donut / area）
     python3 gen_assets.py chart --kind bar --data data.json --out chart.png --theme tech
@@ -26,11 +26,22 @@ import json
 import math
 import os
 import sys
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-CJK = "/system/fonts/NotoSansCJK-Regular.ttc"
-CJK_B = "/system/fonts/NotoSansCJK-Bold.ttc"
+WINDOWS_FONTS = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts"
+REGULAR_FONTS = (
+    WINDOWS_FONTS / "msyh.ttc",
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+    Path("/System/Library/Fonts/PingFang.ttc"),
+    Path("/system/fonts/NotoSansCJK-Regular.ttc"),
+)
+BOLD_FONTS = (
+    WINDOWS_FONTS / "msyhbd.ttc",
+    Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),
+    Path("/system/fonts/NotoSansCJK-Bold.ttc"),
+)
 
 THEMES = {
     "tech":  {"bg": "#0A2540", "main": "#2F80FF", "accent": "#00D4FF", "text": "#E8EEF9",
@@ -49,9 +60,20 @@ def hex2rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
+def font_path(bold=False):
+    override = os.environ.get("PPT_ASSET_FONT")
+    if override:
+        path = Path(override)
+        if not path.is_file():
+            raise ValueError(f"PPT_ASSET_FONT 指向的字体文件不存在：{path}")
+        return path
+    candidates = (*BOLD_FONTS, *REGULAR_FONTS) if bold else REGULAR_FONTS
+    return next((path for path in candidates if path.is_file()), None)
+
+
 def font(size, bold=False):
-    p = CJK_B if bold and os.path.exists(CJK_B) else CJK
-    return ImageFont.truetype(p, size)
+    path = font_path(bold)
+    return ImageFont.truetype(str(path), size) if path else ImageFont.load_default(size=size)
 
 
 # ---------- 图表 ----------
@@ -65,9 +87,10 @@ def make_chart(kind, data, out, theme_name, title="", width=1600, transparent=Tr
         sys.exit("需要 matplotlib: pip install matplotlib")
     th = THEMES[theme_name]
     # 中文字体
-    if os.path.exists(CJK):
-        font_manager.fontManager.addfont(CJK)
-        plt.rcParams["font.family"] = font_manager.FontProperties(fname=CJK).get_name()
+    cjk_font = font_path()
+    if cjk_font:
+        font_manager.fontManager.addfont(str(cjk_font))
+        plt.rcParams["font.family"] = font_manager.FontProperties(fname=str(cjk_font)).get_name()
     plt.rcParams["axes.unicode_minus"] = False
 
     cats = data.get("categories", [])
@@ -314,3 +337,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
