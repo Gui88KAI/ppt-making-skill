@@ -1,75 +1,98 @@
-# 示例：一套 8 页的创赛路演 PPT（科技赛道）
-# 生成: python3 scripts/deck_builder.py examples/demo.yaml -o examples/demo.pptx --check
+visual_mode: image-led
+compatibility:
+  target: wps
 theme:
-  main: "#0B5FFF"
-  secondary: "#0A2540"
-  accent: "#00D4FF"
-  bg: "#FFFFFF"
-  text: "#2B2B2B"
-  muted: "#8A8F98"
-  font_title: "思源黑体 Heavy"
-  font_body: "思源黑体"
-  font_num: "DIN"
-
+  main: '#886044'
+  text: '#16382C'
+  font_title: 华文行楷
+  font_body: 微软雅黑
 pages:
-  - type: cover
-    kicker: "第八届中国国际互联网+ 大学生创新创业大赛"
-    title: "智眸巡检\n高危环境下的自主巡检方案"
-    subtitle: "用国产视觉模组替代人工登高作业"
-    org: "智眸科技 · 2026"
-
-  - type: section
-    number: "01"
-    title: "痛点与机会"
-    note: "为什么这个赛道的现在是最好的时间点"
-
-  - type: cards
-    title: "三个绕不开的痛点"
-    sub: "每个痛点都对应一个可量化的损失"
-    cols: 3
-    source: "数据来源：2025 年电力行业安全白皮书"
-    items:
-      - {title: "人工登高危险", note: "年事故率 0.37%，保险成本逐年上涨", mark: "01"}
-      - {title: "巡检效率低", note: "单塔人工巡检 45 分钟，日覆盖不足 10 座", mark: "02"}
-      - {title: "数据不闭环", note: "纸笔记录，缺陷发现滞后平均 7 天", mark: "03"}
-
-  - type: kpi
-    title: "我们做到的"
-    sub: "同一座塔，从 45 分钟缩短到 6 分钟"
-    source: "数据来源：2025 年 9 月现场测试报告"
-    items:
-      - {value: "87%", unit: "效率提升", label: "单塔巡检 6 分钟"}
-      - {value: "99.2%", unit: "缺陷识别率", label: "自研视觉模型"}
-      - {value: "42%", unit: "成本下降", label: "对比传统方案"}
-
-  - type: timeline
-    title: "三年规划"
-    items:
-      - {label: "2026", title: "示范落地", note: "3 个变电站试点"}
-      - {label: "2027", title: "省级推广", note: "覆盖 120 座变电站"}
-      - {label: "2028", title: "全国复制", note: "进入 6 个省级电网"}
-      - {label: "2029", title: "出海", note: "东南亚市场"}
-
-  - type: compare
-    title: "为什么是我们"
-    sub: "同样的任务，两条不同的技术路径"
-    left:
-      title: "传统人工巡检"
-      items: ["登高作业，安全风险高", "单塔 45 分钟", "纸笔记录，滞后 7 天", "单塔年均成本 2.1 万元"]
-    right:
-      title: "智眸自主巡检"
-      items: ["地面作业，零登高", "单塔 6 分钟", "数据实时回传", "单塔年均成本 1.2 万元"]
-
-  - type: image_text
-    title: "产品形态"
-    sub: "地面站 + 自主爬塔机器人"
-    image: ""
-    items:
-      - "模块化设计，30 分钟现场部署"
-      - "支持 4G / 5G / 电力专网"
-      - "IP65 防护，-20℃ 到 60℃ 工作"
-      - "国产视觉模组，成本下降 60%"
-
-  - type: closing
-    title: "谢谢"
-    note: "智眸科技 · 让高危作业不再需要人"
+  - type: photo_story
+    image: career-growth/cover-photo.jpg
+    kicker: 职业生涯规划 · 成长赛道
+    title: "从单片机\n到具身智能"
+    subtitle: 嵌入式工程师的成长路线
+    title_size: 62
+    lettered: true
+    text_x: 2.4
+    text_y: 4.25
+    ink: '#F5DFB5'
+    highlight: '#E4C083'
+    purpose: 亮出职业目标
+    visual_anchor: 电子实验台
+    logic_role: 开场
+    reading_order: 标题、职业方向、场景
+    asset_bindings: [{image_role: scene}]
+    speaker_notes: 成长赛道的公开改编示例。实验台为生成的情境图。
+  - type: photo_story
+    image: career-growth/origin-photo.jpg
+    kicker: 职业探索
+    title: 职业方向是怎样定下来的
+    title_size: 36
+    text_x: 9.6
+    text_y: 2.4
+    text_width: 21
+    steps:
+      - {label: '01', title: 单片机与画板, detail: 从电路图走到第一块可调试的板}
+      - {label: '02', title: 传感器与联网, detail: 让设备采集并传出环境数据}
+      - {label: '03', title: 视觉与控制, detail: 让识别结果触发一个设备动作}
+    purpose: 用探索过程解释职业选择
+    visual_anchor: 桌面笔记与开发板
+    logic_role: 起点
+    reading_order: 标题、三段经历
+    asset_bindings: [{image_role: scene}]
+    speaker_notes: 将三段探索替换成自己的真实经验。底图为生成的情境图。
+  - type: photo_story
+    image: career-growth/sensors.jpg
+    kicker: 学习实践
+    title: 从采集信号到设备联网
+    title_size: 39
+    text_x: 2.4
+    text_y: 2.2
+    text_width: 20
+    ink: '#FCF3E3'
+    highlight: '#E9C288'
+    steps:
+      - {label: 采集, title: 读取温湿度、距离和人体感应信号, detail: 先观察每个传感器的输出}
+      - {label: 联网, title: 让采集数据在手机上可见, detail: 记录断连和恢复时的行为}
+    purpose: 用一次实践说明能力如何积累
+    visual_anchor: 开发板与三种传感器
+    logic_role: 实践过程
+    reading_order: 标题、采集、联网、器件
+    asset_bindings: [{image_role: concept}]
+    speaker_notes: 器件图为生成示意。正式参赛稿可补入原创调试记录和实际读数。
+  - type: photo_story
+    image: career-growth/horizon-photo.jpg
+    kicker: 成长计划
+    title: 每个阶段都留一份可复查的成果
+    title_size: 35
+    text_x: 2.4
+    text_y: 2.35
+    text_width: 22.5
+    steps:
+      - {label: 近期, title: 完成一轮视觉模型评估, detail: 保留验证集、误检样例和复盘记录}
+      - {label: 中期, title: 搭一套可重跑的端侧演示, detail: 记录设备配置、运行步骤和延迟}
+      - {label: 长期, title: 让识别触发一次设备动作, detail: 记录接线、触发条件和异常处理}
+    purpose: 给出带验收物的行动计划
+    visual_anchor: 桌面与机械臂
+    logic_role: 下一步
+    reading_order: 标题、近期、中期、长期
+    asset_bindings: [{image_role: scene}]
+    speaker_notes: 三项内容均为计划示例。机械臂底图为生成示意。
+  - type: photo_story
+    image: career-growth/robot.jpg
+    kicker: 职业目标
+    title: "先验证模型\n再走向设备"
+    subtitle: 用可复现的小项目检验职业方向
+    title_size: 55
+    text_x: 2.4
+    text_y: 4.5
+    text_width: 16
+    ink: '#F5DFB5'
+    highlight: '#E4C083'
+    purpose: 收束成长路线
+    visual_anchor: 机器人与视觉模组
+    logic_role: 结尾
+    reading_order: 结论、行动、场景
+    asset_bindings: [{image_role: concept}]
+    speaker_notes: 机器人为生成的未来情境示意。

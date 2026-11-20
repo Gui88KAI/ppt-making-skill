@@ -2,6 +2,14 @@
 
 面向创赛、商业计划书、融资路演、答辩和课程的 PPT 制作 Skill，支持按项目自动生成素材与版面。
 
+## 成品示例
+
+《从单片机到具身智能》是基于已制作的生涯规划大赛成长赛道作品改编的 5 页 Demo。它用 5 张原项目生成的场景图呈现职业探索、学习实践和阶段计划。全幅图片与可编辑文字分层，封面标题逐字可调。
+
+![成长赛道 Demo 实际渲染预览](examples/career-growth/preview.jpg)
+
+[下载可编辑 PPTX](examples/career-growth/demo.pptx) · [页面规格](examples/demo.yaml) · [图片来源与复现说明](examples/career-growth/README.md)
+
 先读 [SKILL.md](SKILL.md)。入口会复用已知需求、询问缺项，并根据用途读取以下一个独立方法：
 
 | 方向 | 特点 | 当前验证状态 |
@@ -35,7 +43,7 @@ python -m pip install python-pptx pyyaml pillow matplotlib
 python scripts/deck_builder.py examples/demo.yaml -o demo.pptx --check
 ```
 
-此命令只演示规格转 PPTX。修改 YAML 中的文案、配色和页型可重新生成。配图需按项目实际生成，并将图片路径写入对应页的 `image` 字段。图表 PNG 需要 Matplotlib，流程图、时间轴及背景使用 Pillow。命令和输入格式可通过 `python scripts/gen_assets.py --help` 和 `python scripts/gen_assets.py chart --help` 查看。系统没有合适的中文字体时，可将 `PPT_ASSET_FONT` 设为本机字体文件路径。
+此命令用随示例附带的 5 张生成图复现上述成品。制作新项目时，按内容生成新图并修改 YAML 的 `image` 路径和文案。只检查基础生成链路时可改用 `examples/smoke.yaml`。图表 PNG 需要 Matplotlib，流程图、时间轴及背景使用 Pillow。命令和输入格式可通过 `python scripts/gen_assets.py --help` 查看。系统没有合适的中文字体时，可将 `PPT_ASSET_FONT` 设为本机字体文件路径。
 
 `templates/` 中的 tech、red、rural 供可选参考。存在且风格贴合时，优先看已有预览并借鉴配色和构图，再从零生成。用户明确指定模板时，才按[模板指南](templates/README.md)填充副本。缺少模板或预览不影响默认流程。
 

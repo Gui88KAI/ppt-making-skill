@@ -19,6 +19,7 @@ import argparse
 import json
 import os
 import sys
+from pathlib import Path
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -584,6 +585,65 @@ BUILDERS = {
 }
 
 
+def p_photo_story(prs, theme, spec, ctx):
+    """Full-bleed photo with editable headings and a small number of text rows."""
+    slide = blank(prs, theme)
+    photo = spec["image"]
+    if not Path(photo).is_file():
+        raise ValueError(f"找不到全幅图片：{photo}")
+    from PIL import Image
+
+    with Image.open(photo) as source:
+        ratio = source.width / source.height
+    canvas_ratio = prs.slide_width / prs.slide_height
+    picture_shape = slide.shapes.add_picture(photo, 0, 0, prs.slide_width, prs.slide_height)
+    if ratio > canvas_ratio:
+        picture_shape.crop_left = picture_shape.crop_right = (1 - canvas_ratio / ratio) / 2
+    elif ratio < canvas_ratio:
+        picture_shape.crop_top = picture_shape.crop_bottom = (1 - ratio / canvas_ratio) / 2
+    ink = spec.get("ink", theme["text"])
+    accent = spec.get("highlight", theme["main"])
+    x = spec.get("text_x", 2.15)
+    width = spec.get("text_width", 16.5)
+    y = spec.get("text_y", 2.0)
+    text(slide, spec["kicker"], x, y, width, 0.85, size=18, bold=True,
+         color=accent, font=theme["font_body"], spacing=1.0)
+    title_lines = spec["title"].split("\n")
+    title_size = spec.get("title_size", 47)
+    title_y = y + 1.3
+    line_height = title_size / 72 * 2.54 * 1.27
+    for row, line in enumerate(title_lines):
+        line_y = title_y + row * line_height
+        if spec.get("lettered"):
+            advance = title_size / 72 * 2.54 * 1.07
+            for col, character in enumerate(line):
+                glyph = text(slide, character, x + col * advance, line_y,
+                             advance, line_height, size=title_size, color=ink,
+                             font=theme["font_title"], spacing=1.0)
+                glyph.text_frame.word_wrap = False
+        else:
+            text(slide, line, x, line_y, width, line_height, size=title_size,
+                 color=ink, font=theme["font_title"], spacing=1.0)
+    next_y = title_y + len(title_lines) * line_height + 0.28
+    hline(slide, x, next_y, min(width, 3.0), accent, 1.6)
+    next_y += 0.56
+    if spec.get("subtitle"):
+        text(slide, spec["subtitle"], x, next_y, width, 1.1, size=23,
+             color=ink, font=theme["font_body"], spacing=1.0)
+        next_y += 1.34
+    for step in spec.get("steps", []):
+        text(slide, step["label"], x, next_y, 2.15, 0.9, size=18, bold=True,
+             color=accent, font=theme["font_body"], spacing=1.0)
+        text(slide, step["title"], x + 2.3, next_y, width - 2.3, 0.9,
+             size=21, bold=True, color=ink, font=theme["font_body"], spacing=1.0)
+        text(slide, step["detail"], x + 2.3, next_y + 0.92, width - 2.3, 0.85,
+             size=18, color=ink, font=theme["font_body"], spacing=1.0)
+        next_y += 2.26
+
+
+BUILDERS["photo_story"] = p_photo_story
+
+
 def build(spec, out):
     if not isinstance(spec.get("pages"), list) or not spec["pages"]:
         raise ValueError("规格必须包含非空 pages 列表")
@@ -621,6 +681,13 @@ def main():
     args = ap.parse_args()
     raw = open(args.spec, encoding="utf-8").read()
     spec = json.loads(raw) if args.spec.endswith(".json") else __import__("yaml").safe_load(raw)
+    # Photo stories ship their assets alongside the specification.
+    for page in (spec.get("pages") or []) if isinstance(spec, dict) else []:
+        if not isinstance(page, dict):
+            continue
+        kind = page.get("layout_family") or page.get("layout") or page.get("type")
+        if kind == "photo_story" and page.get("image"):
+            page["image"] = str(Path(args.spec).resolve().parent / page["image"])
     if args.target:
         spec.setdefault("compatibility", {})["target"] = args.target
     from deck_lint import lint
